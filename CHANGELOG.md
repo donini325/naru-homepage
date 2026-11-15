@@ -8,6 +8,7 @@
 
 ### 2026-11
 
+- [2026-11-16 하루 일정을 카드 안으로, 화살표 걷음](#2026-11-16-flow-inline)
 - [2026-11-16 그날 카드로 위계 정리, 출제사 둘 더](#2026-11-16-day-card)
 - [2026-11-16 출제사 GroupBy, 멘토 순서, 알약 걷음](#2026-11-16-groupby)
 - [2026-11-16 멘토 칸 첫 버전, 8월부터 함께한 곳](#2026-11-16-mentors-first)
@@ -562,6 +563,12 @@
 - [2026-06-15 Design-revamp polish cycle](#changelog-june-15-2026)
 
 ---
+
+<a id="2026-11-16-flow-inline"></a>
+## 2026-11-16 하루 일정을 카드 안으로, 화살표 걷음
+- 범위: components/crossing/redesign/CrossingSeoul.tsx, data/naru.ts, components/crossing/RegisterModal.tsx, components/ui/OpenChatLink.tsx, components/shared/MediaList.tsx, components/naru/ManifestoViewer.tsx
+- 한 것: 사용자 요청. "하루 일정 보기" 링크와 창을 없애고 그 내용(순서, 무엇, 설명, 장소, 연사와 안건)을 그날 카드의 첫 칸 "일정"으로(줄이 차례로 떠오름). 출제사 순서 Lazy Yogurt, Feed Media, GroupBy, 정사각 로고는 크게(최대 68px). AI 티: 버튼 끝의 →와 링크 끝의 ↗를 걷고, 매니페스토 닫기 버튼의 알약 모양을 10px 모서리로
+- 검증: tsc 통과, 로컬 세 페이지 200
 
 <a id="2026-11-16-day-card"></a>
 ## 2026-11-16 그날 카드로 위계 정리, 출제사 둘 더
