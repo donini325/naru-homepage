@@ -443,6 +443,35 @@ export default function CrossingSeoul() {
                           {t(s.venueNote)}
                         </span>
                       )}
+                      {/* DECIDED 2026-11-15 (사용자: "하루 일정은 왼쪽으로. Day 1 Day 2 있는 곳에 일정이 펴지게"): 하루 일정은 날짜 칸 안, 장소 아래.
+                          노선이 그날을 지나면 펼쳐지고 줄이 차례로 떠오릅니다(한 번 펼치면 접지 않음). 폰에서는 날짜 줄 아래 한 줄을 다 씁니다. */}
+                      {s.flow && s.flow.length > 0 && (
+                        <Collapse id={`flow-${s.dayOffset}`} open={i < reached} className="w-full">
+                          <div className="pt-3 lg:pt-4">
+                            <p className={`${META} font-bold ${INK}`}>{t(C.dayFlowLabel)}</p>
+                            <ol className={`mt-1.5 border-t ${RULE}`}>
+                              {s.flow.map((r, k) => (
+                                <li
+                                  key={k}
+                                  style={{ transitionDelay: i < reached ? `${150 + k * 70}ms` : "0ms" }}
+                                  className={`border-b ${RULE} py-2 transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none [html[data-motion=off]_&]:transition-none ${i < reached ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}
+                                >
+                                  <p className={`break-keep ${META} ${INK}`}>
+                                    {r.time && <span className={`mr-1.5 font-semibold tabular-nums ${NAVY}`}>{r.time}</span>}
+                                    {t(C.flow[s.dayOffset]?.[k] ?? r.what)}
+                                  </p>
+                                  {r.speaker && <p className={`break-keep text-[0.875rem] leading-[1.5] ${SOFT}`}>{t(r.speaker.name)}</p>}
+                                  {r.where && (
+                                    <p className="break-keep text-[0.875rem] leading-[1.5] text-caption">
+                                      {r.href ? <Link href={r.href} className={`font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-[3px] hover:decoration-naru-navy`}>{t(r.where)}</Link> : t(r.where)}
+                                    </p>
+                                  )}
+                                </li>
+                              ))}
+                            </ol>
+                          </div>
+                        </Collapse>
+                      )}
                     </div>
                     <div className="mt-3 min-w-0 lg:mt-0 lg:pl-10">
                       <h3 className={`break-keep ${HEADING} ${INK}`}>{t(s.title)}</h3>
@@ -486,31 +515,6 @@ export default function CrossingSeoul() {
                       {strip && <div className="mt-5 max-w-[42rem] lg:max-w-none">{strip}</div>}
                       {/* DECIDED 2026-11-15 (사용자: "하루 일정 보기에 있는 내용들은 Day 밑에 자동으로 비슷하게 나오게, 애니메이션으로", "멘토 보기를 없애줘"):
                           하루 일정과 그날의 멘토를 버튼 뒤 창 대신 그날 칸 안에 그립니다. 노선이 그날을 지나면 펼쳐지고 줄이 차례로 떠오릅니다(한 번 펼치면 접지 않음). */}
-                      {s.flow && s.flow.length > 0 && (
-                        <Collapse id={`flow-${s.dayOffset}`} open={i < reached} className="max-w-[42rem] lg:max-w-none">
-                          <div className="pt-5">
-                            <p className={`${META} font-bold ${INK}`}>{t(C.dayFlowLabel)}</p>
-                            <ol className={`mt-2 border-t ${RULE}`}>
-                              {s.flow.map((r, k) => (
-                                <li key={k} style={{ transitionDelay: i < reached ? `${150 + k * 70}ms` : "0ms" }} className={`grid gap-1 border-b ${RULE} py-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-6 transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none [html[data-motion=off]_&]:transition-none ${i < reached ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}>
-                                  <div className="min-w-0">
-                                    <p className={`break-keep ${BODY} ${INK}`}>
-                                      {r.time && <span className={`mr-2 font-semibold tabular-nums ${NAVY}`}>{r.time}</span>}
-                                      {t(C.flow[s.dayOffset]?.[k] ?? r.what)}
-                                    </p>
-                                    {r.speaker && <p className={`mt-0.5 break-keep ${META} ${SOFT}`}>{t(r.speaker.name)} <span className="text-caption">{t(r.speaker.role)}</span></p>}
-                                  </div>
-                                  {r.where && (
-                                    <p className={`break-keep ${META} ${SOFT} sm:pt-0.5 sm:text-right`}>
-                                      {r.href ? <Link href={r.href} className={`font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-[3px] hover:decoration-naru-navy`}>{t(r.where)}</Link> : t(r.where)}
-                                    </p>
-                                  )}
-                                </li>
-                              ))}
-                            </ol>
-                          </div>
-                        </Collapse>
-                      )}
                       {mentorsOn && (
                         <Collapse id={`mentors-${s.dayOffset}`} open={i < reached} className="max-w-[42rem] lg:max-w-none">
                           <div className="pt-5">
