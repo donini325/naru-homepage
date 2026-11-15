@@ -8,6 +8,7 @@
 
 ### 2026-11
 
+- [2026-11-15 하루 일정 펼침, 팀 코드](#2026-11-15-flow-teamcode)
 - [2026-11-15 멘토 칸 펼침, 등록 지금 엶](#2026-11-15-mentors-open)
 - [2026-11-13 8월 기록 새 화면, 미디어 섹션](#2026-11-13-august-media)
 - [2026-11-11 등록 시작을 11월 16일(월)로](#2026-11-11-register-monday)
@@ -554,6 +555,12 @@
 - [2026-06-15 Design-revamp polish cycle](#changelog-june-15-2026)
 
 ---
+
+<a id="2026-11-15-flow-teamcode"></a>
+## 2026-11-15 하루 일정 펼침, 팀 코드
+- 범위: components/crossing/redesign/CrossingSeoul.tsx, data/naru.ts, components/crossing/redesign/copy.ts, data/crossingForm.ts, app/api/crossing/register/route.ts, components/crossing/RegisterModal.tsx
+- 한 것: 사용자 요청. "하루 일정 보기"와 "멘토 보기" 버튼과 창을 없애고, 하루 일정과 그날 멘토를 그날 칸 안에 노선이 지나면 펼쳐지게(줄마다 차례로 떠오름). 멘토는 그날 오는 분만. 그날 설명 문단은 그날 칸 맨 끝으로. Day 2 PO session을 빌더 세션(Builder session)으로. 유재민 님을 Day 2, 3에서 내림(confirmed false). 등록 창 제목을 24/28px로, 맨 위 "이 기기에만 저장" 한 줄을 뺌. AI 질문 아래 팀 코드(선택, 30자): 같은 코드끼리 한 팀, 한 코드에 두 명까지(서버가 세어 셋째는 409 team_code_full)
+- 검증: tsc 통과, 로컬 /, /crossing, /2026-08 200. 팀 코드 제한은 실제 DB에 보내 보지 않음
 
 <a id="2026-11-15-mentors-open"></a>
 ## 2026-11-15 멘토 칸 펼침, 등록 지금 엶
