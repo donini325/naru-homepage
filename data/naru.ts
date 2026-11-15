@@ -3131,7 +3131,8 @@ export const naru = {
         // DECIDED 2026-11-05 (docs/day-flow-brief.md 2장, 사용자): 하루의 흐름. 시각은 아직 넣지 않습니다(같은 날 사용자: "아직 정확한 시간은 넣지 말아줘"). 정해지면 time만 채웁니다. 필참 표시 없음(같은 날 사용자: "다 참여해야지").
         flow: [
           { what: { ko: "트랙별 발표. 출제사와 멘토, 투자사 앞에서 고른 병목과 만든 툴, 숫자 하나로 본 효과. 출제사는 트랙마다 1.5시간을 비워 두고 옴", en: "Presentations by track, in front of the issuing companies, mentors and investors: the bottleneck you chose, the tool you built, and its effect in one number. Each issuing company sets aside 1.5 hours per track" }, where: { ko: "현장", en: "On site" } },
-          { what: { ko: "트랙별 인기투표", en: "Vote by track" }, where: { ko: "/crossing/vote", en: "/crossing/vote" } },
+          // 2026-11-17 (사용자: "트랙별 인기투표 /crossing/vote 빼"): 장소 자리에 주소가 글자로 보여 뺐습니다.
+          { what: { ko: "트랙별 인기투표", en: "Vote by track" } },
           { what: { ko: "시상과 클로징. 출제사가 트랙마다 한 팀, 투자사가 고른 팀, 인기투표. 출제사가 고른 팀은 행사 뒤 그 기업과 한 번 더 만남", en: "Awards and closing: one team per track picked by the issuing company, a team picked by the investors, and the vote. The team an issuing company picks meets that company once more after the event" }, where: { ko: "현장", en: "On site" } },
           { what: { ko: "끝난 뒤 멘토에게 무엇을 만들었는지 한 줄로 먼저 연락", en: "Afterwards, write to your mentor first, with one line on what you built" } },
         ],

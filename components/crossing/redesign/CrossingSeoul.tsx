@@ -209,6 +209,32 @@ function DayCard({ children }: { children: ReactNode }) {
 
 /** DECIDED 2026-11-17 (사용자: "통째로 말고 순서대로 스크롤 다운 하면서 나타나게"): 일정 줄과 멘토 이름이 저마다 화면에 닿을 때 하나씩 나타납니다. */
 const ITEM = REVEAL_ITEM_BASE.replaceAll("group-data-[shown=true]:", "data-[shown=true]:");
+/**
+ * DECIDED 2026-11-17 (사용자: "컨텍스트 열기, 찾기, 확인받기, 만들기, 공유하기 이거는 내리면 타이핑 되는 것처럼"): 그날 제목이 화면에 닿으면 한 글자씩 쳐집니다(글자당 70ms, 끝에 깜빡이는 줄).
+ * 화면 아래로 빠졌다 다시 오면 또 쳐집니다. 화면 낭독기는 처음부터 제목 전체를 읽고, 동작 줄이기면 바로 다 보입니다.
+ */
+function Typewriter({ text, className = "" }: { text: string; className?: string }) {
+  const { ref, shown } = useShown<HTMLHeadingElement>();
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.motion === "off";
+    if (!shown) { setN(still ? text.length : 0); return; }
+    if (still) { setN(text.length); return; }
+    setN(0);
+    let k = 0;
+    const id = window.setInterval(() => { k += 1; setN(k); if (k >= text.length) window.clearInterval(id); }, 70);
+    return () => window.clearInterval(id);
+  }, [shown, text]);
+  const typing = shown && n < text.length;
+  return (
+    <h3 ref={ref} aria-label={text} className={className}>
+      <span aria-hidden>{text.slice(0, n)}</span>
+      <span aria-hidden className={`ml-0.5 inline-block w-[2px] translate-y-[3px] bg-naru-navy align-baseline ${typing ? "h-[1em] animate-pulse" : "h-0"}`} />
+      <span aria-hidden className="invisible">{text.slice(n)}</span>
+    </h3>
+  );
+}
+
 function RevealItem({ className = "", style, children }: { className?: string; style?: React.CSSProperties; children: ReactNode }) {
   const { ref, shown } = useShown<HTMLLIElement>();
   return <li ref={ref} data-shown={shown} style={style} className={`${ITEM} ${className}`}>{children}</li>;
@@ -493,7 +519,7 @@ export default function CrossingSeoul() {
                       )}
                     </div>
                     <div className="mt-3 min-w-0 lg:mt-0 lg:pl-10">
-                      <h3 className={`break-keep ${HEADING} ${INK}`}>{t(s.title)}</h3>
+                      <Typewriter text={t(s.title)} className={`break-keep ${HEADING} ${INK}`} />
                       <p className={`mt-2 max-w-[42rem] break-keep ${BODY} ${SOFT} lg:max-w-none`}><Lines text={t(C.line[s.dayOffset] ?? s.line)} /></p>
                       {/* DECIDED 2026-11-16 (사용자: "너무 많은 정보가 다른 위계로 있어. 디자인 위계 바로잡고"): 그날 할 일을 흰 카드 하나에 칸으로 모읍니다.
                           칸마다 왼쪽에 같은 크기의 이름(세션, 미션, 들고 갈 것, 멘토), 오른쪽에 본문 굵기의 제목. 누르면 펼쳐지는 것은 꺾쇠가 붙습니다.
@@ -516,15 +542,19 @@ export default function CrossingSeoul() {
                                     <RevealItem key={k} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-2">
                                       <span aria-hidden className={`${HEADING} tabular-nums ${NAVY}`}>{k + 1}</span>
                                       <div className="min-w-0">
-                                        {/* 2026-11-17 마무리: 앞 구절은 본문 크기(17px)로 올려 번호(20px)와 한 줄에서 어울리게. 설명 15px, 장소 14px. */}
+                                        {/* DECIDED 2026-11-17 (사용자: "장소를 밑에 두지 말고 현장: 팀 꾸리기처럼", "한 문장마다 한 줄"): 장소는 앞 구절 앞에 "장소: "로 붙이고, 설명은 문장마다 한 줄. */}
                                         <p className={`break-keep ${BODY} font-semibold ${INK}`}>
+                                          {r.where && (
+                                            <span className={`font-normal ${SOFT}`}>
+                                              {r.href ? <Link href={r.href} className={`font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-[3px] hover:decoration-naru-navy`}>{t(r.where)}</Link> : t(r.where)}:{" "}
+                                            </span>
+                                          )}
                                           {r.time && <span className="mr-2 tabular-nums">{r.time}</span>}
                                           {head}
                                         </p>
-                                        {rest && <p className={`break-keep ${META} ${SOFT}`}>{rest}</p>}
-                                        {r.where && (
-                                          <p className="break-keep ${META} text-caption">
-                                            {r.href ? <Link href={r.href} className={`font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-[3px] hover:decoration-naru-navy`}>{t(r.where)}</Link> : t(r.where)}
+                                        {rest && (
+                                          <p className={`break-keep ${META} ${SOFT}`}>
+                                            {rest.split(/(?<=[.?!])\s+/).map((x, j) => <span key={j} className="block">{x}</span>)}
                                           </p>
                                         )}
                                         {sp && (
