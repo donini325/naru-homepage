@@ -8,6 +8,7 @@
 
 ### 2026-11
 
+- [2026-11-16 하루 일정 카드, 완료 화면](#2026-11-16-flow-card)
 - [2026-11-16 펼침 대신 제자리 나타남, 검증](#2026-11-16-reveal-validate)
 - [2026-11-15 하루 일정을 날짜 칸으로](#2026-11-15-flow-left)
 - [2026-11-15 하루 일정 펼침, 팀 코드](#2026-11-15-flow-teamcode)
@@ -557,6 +558,12 @@
 - [2026-06-15 Design-revamp polish cycle](#changelog-june-15-2026)
 
 ---
+
+<a id="2026-11-16-flow-card"></a>
+## 2026-11-16 하루 일정 카드, 완료 화면
+- 범위: components/crossing/redesign/CrossingSeoul.tsx, components/crossing/RegisterModal.tsx, data/naru.ts
+- 한 것: 사용자 요청. 하루 일정을 날짜 칸에서 본문 칸으로 되돌려 흰 카드로(줄마다 순서 번호, 앞 구절 굵게, 설명 옅게, 장소 오른쪽, 화면에 들어오면 차례로 떠오름). 등록 완료 화면: 제목을 24/28px, 되비침을 이름, 카카오톡 ID, 이메일 세 줄 표로, 문구를 해요체로. 오픈채팅 휴대폰 안내 문구를 고침
+- 검증: tsc 통과, 로컬 /crossing 200
 
 <a id="2026-11-16-reveal-validate"></a>
 ## 2026-11-16 펼침 대신 제자리 나타남, 검증
