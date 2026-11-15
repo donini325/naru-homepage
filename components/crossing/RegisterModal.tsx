@@ -415,7 +415,7 @@ export default function RegisterModal({ open, onClose, onRegistered, refSource, 
                   {/* DECIDED 2026-10-15 (사용자): 소식은 오픈채팅으로만 나가므로, 이 화면에서 그 방으로 가는 버튼이 테스트 카드보다 먼저 섭니다. */}
                   {links.openChat && (
                     <a href={links.openChat} target="_blank" rel="noopener noreferrer" onClick={() => trackOpenChat("naru-register-success")} className={`${buttonClass("secondary", "naru")} mt-5 w-full max-w-sm justify-center`}>
-                      {t(openChatLabels.december)}<span aria-hidden className="ml-1.5">→</span>
+                      {t(openChatLabels.december)}
                     </a>
                   )}
                   {/* DECIDED 2026-11-02 (브리프 O5, D6 뒤집음): 카카오톡 설치 안내가 뜨는 쪽은 데스크톱이라 휴대폰 안내는 lg부터만. */}
@@ -463,7 +463,6 @@ export default function RegisterModal({ open, onClose, onRegistered, refSource, 
                         {!closed && links.openChat && (
                           <a href={links.openChat} target="_blank" rel="noopener noreferrer" onClick={() => trackOpenChat("naru-register-modal")} className={`inline-flex min-h-[44px] w-full items-center justify-center gap-1.5 ${BODY} font-semibold text-accent underline underline-offset-4 hover:text-white sm:w-auto`}>
                             {t(openChatLabels.december)}
-                            <span aria-hidden>→</span>
                           </a>
                         )}
                       </>

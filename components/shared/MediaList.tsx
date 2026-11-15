@@ -40,7 +40,7 @@ export default function MediaList({ event, src }: { event?: MediaEvent; src: str
               </p>
               {one ? (
                 <a href={one.url} {...ext} onClick={() => track("naru_media", { src, to: t(one.outlet) })} className={`mt-1 inline break-keep ${HEADING} ${INK} ${linkCls}`}>
-                  {t(m.title)}<span aria-hidden className={`ml-1.5 ${META} ${SOFT}`}>↗</span><span className="sr-only"> ({t(mediaCopy.open)})</span>
+                  {t(m.title)}<span className="sr-only"> ({t(mediaCopy.open)})</span>
                 </a>
               ) : (
                 <p className={`mt-1 break-keep ${HEADING} ${INK}`}>{t(m.title)}</p>

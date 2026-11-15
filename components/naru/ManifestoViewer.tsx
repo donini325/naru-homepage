@@ -230,7 +230,7 @@ export default function ManifestoViewer({ locale, t }: Props) {
         <div role="dialog" aria-modal="true" aria-label={t({ ko: "매니페스토", en: "Manifesto" })} className="fixed inset-0 z-[1000] flex flex-col bg-naru-ink/95">
           <div className="flex shrink-0 items-center justify-between px-[16px] py-[10px]">
             <span aria-live="polite" className={`${META} tabular-nums text-white/70`}>{counter(b.index)}</span>
-            <button type="button" onClick={close} className={`inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/15 px-4 ${BODY} text-white/85 transition hover:border-white/30 hover:text-white`}>
+            <button type="button" onClick={close} className={`inline-flex min-h-[44px] items-center gap-2 rounded-[10px] border border-white/15 px-4 ${BODY} text-white/85 transition hover:border-white/30 hover:text-white`}>
               {t({ ko: "닫기", en: "Close" })}
               <span aria-hidden>×</span>
             </button>

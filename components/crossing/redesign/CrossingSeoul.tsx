@@ -18,7 +18,6 @@ import { DECEMBER_EVENT_NAME, decemberEventLabel, formatDecemberDateLine, format
 import { TIMETABLE_OPEN } from "@/lib/crossingOps";
 import { VOTE_BUTTON_OPEN } from "@/lib/crossingVote";
 import { useCrossingRegisterOptional } from "@/components/crossing/RegisterProvider";
-import DayFlowModal from "@/components/crossing/DayFlowModal";
 import PhotoLightbox, { warmPhoto } from "@/components/shared/PhotoLightbox";
 import MobileChatBar from "@/components/shared/MobileChatBar";
 import MediaList from "@/components/shared/MediaList";
@@ -165,8 +164,8 @@ function DayRow({ label, first, children }: { label: string; first?: boolean; ch
 const REVEAL_ITEM = "transition-[opacity,transform] duration-500 ease-out opacity-0 translate-y-1.5 group-data-[shown=true]:translate-y-0 group-data-[shown=true]:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:transition-none";
 const revealDelay = (k: number) => ({ transitionDelay: `${60 + k * 80}ms` });
 
-function RevealList({ className = "", children }: { className?: string; children: ReactNode }) {
-  const ref = useRef<HTMLUListElement>(null);
+function RevealList({ as: Tag = "ul", className = "", children }: { as?: "ul" | "ol"; className?: string; children: ReactNode }) {
+  const ref = useRef<HTMLOListElement & HTMLUListElement>(null);
   const [shown, setShown] = useState(false);
   useEffect(() => {
     const el = ref.current;
@@ -175,7 +174,7 @@ function RevealList({ className = "", children }: { className?: string; children
     io.observe(el);
     return () => io.disconnect();
   }, []);
-  return <ul ref={ref} data-shown={shown} className={`group ${className}`}>{children}</ul>;
+  return <Tag ref={ref} data-shown={shown} className={`group ${className}`}>{children}</Tag>;
 }
 
 /**
@@ -255,7 +254,6 @@ function Banner({ href, external, logo, note, onClick }: { href: string; externa
     <>
       <span className="shrink-0">{logo}</span>
       <span className={`min-w-0 flex-1 break-keep ${META} ${SOFT}`}>{note}</span>
-      <span aria-hidden className={`shrink-0 ${META} ${SOFT}`}>↗</span>
     </>
   );
   return external ? (
@@ -275,7 +273,6 @@ export default function CrossingSeoul() {
   const photos = hero.photos.filter((p) => !!p.src).slice(0, 4);
 
   const [photoOpen, setPhotoOpen] = useState<number | null>(null);
-  const [flowDay, setFlowDay] = useState<number | null>(null);
   // 2026-11-09: 설명이 펼쳐진 세션(그날의 dayOffset). 한 번에 하나.
   const [openSession, setOpenSession] = useState<number | null>(null);
   const progress = useScheduleProgress(stages.length);
@@ -416,7 +413,8 @@ export default function CrossingSeoul() {
               {stages.map((s, i) => {
                 const dayMentors = s.mentorsCta ? mentorsFor(s.dayOffset) : [];
                 const chips = (C.chips[s.dayOffset] ?? s.chips).map(t);
-                const hasPanel = !!s.session || chips.length > 0 || !!s.milestone || !!s.submit || dayMentors.length > 0;
+                const flow = s.flow ?? [];
+                const hasPanel = flow.length > 0 || !!s.session || chips.length > 0 || !!s.milestone || !!s.submit || dayMentors.length > 0;
                 return (
                   <li key={s.dayOffset} id={`day-${s.dayOffset}`} className={`relative grid scroll-mt-28 gap-x-10 border-b ${RULE} py-6 pl-8 lg:grid-cols-[11rem_minmax(0,1fr)] lg:py-7 lg:pl-0`}>
                     <span ref={(el) => { progress.stopRefs.current[i] = el; }} aria-hidden className="absolute left-0 top-[36px] lg:left-[11rem] lg:top-[48px]"><Stop arrive={s.dayOffset === 4} passed={i < progress.passed} /></span>
@@ -452,8 +450,54 @@ export default function CrossingSeoul() {
                           그 전에는 세션 칩, 미션 카드, 링크 두 개, 멘토 카드가 저마다 다른 크기와 상자로 이어졌습니다. "멘토 보기" 버튼과 창은 멘토 칸이 대신합니다. */}
                       {hasPanel && (
                         <dl className="mt-5 max-w-[42rem] rounded-2xl bg-[#FFFFFF] px-4 ring-1 ring-[#E3E0D8] sm:px-5 lg:max-w-none">
+                          {/* DECIDED 2026-11-16 (사용자: "하루 일정 보기 안에 있는 내용을 다 꺼내. 하루 일정 보기를 지워"): 그날의 흐름이 카드 맨 위 칸입니다.
+                              줄마다 앞 구절(무엇)은 굵게, 뒤 설명과 장소는 옅게. 화면에 들어오면 줄이 차례로 떠오릅니다. */}
+                          {flow.length > 0 && (
+                            <DayRow label={t({ ko: "일정", en: "Schedule" })} first>
+                              <RevealList as="ol" className="flex flex-col gap-3">
+                                {flow.map((r, k) => {
+                                  const text = t(C.flow[s.dayOffset]?.[k] ?? r.what);
+                                  const cut = text.search(/[.:] /);
+                                  const head = cut > 0 ? text.slice(0, cut) : text;
+                                  const rest = cut > 0 ? text.slice(cut + 2) : "";
+                                  const sp = r.speaker;
+                                  const key = `${s.dayOffset}-${k}`;
+                                  return (
+                                    <li key={k} style={revealDelay(k)} className={`grid grid-cols-[1.25rem_minmax(0,1fr)] gap-x-2 ${REVEAL_ITEM}`}>
+                                      <span aria-hidden className={`${META} font-semibold tabular-nums ${NAVY}`}>{k + 1}</span>
+                                      <div className="min-w-0">
+                                        <p className={`break-keep ${META} font-semibold ${INK}`}>
+                                          {r.time && <span className="mr-2 tabular-nums">{r.time}</span>}
+                                          {head}
+                                        </p>
+                                        {rest && <p className={`break-keep ${META} ${SOFT}`}>{rest}</p>}
+                                        {r.where && (
+                                          <p className="break-keep text-[0.875rem] leading-[1.5] text-caption">
+                                            {r.href ? <Link href={r.href} className={`font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-[3px] hover:decoration-naru-navy`}>{t(r.where)}</Link> : t(r.where)}
+                                          </p>
+                                        )}
+                                        {sp && (
+                                          <div className="mt-2 flex gap-3">
+                                            {sp.photo && <Image src={sp.photo} alt="" width={40} height={40} className="h-10 w-10 shrink-0 rounded-lg object-cover" />}
+                                            <div className="min-w-0">
+                                              <p className={`break-keep ${META} font-semibold ${INK}`}>{t(sp.name)} <span className={`font-normal ${SOFT}`}>{t(sp.role)}</span></p>
+                                              {(C.speakerAgenda[key] ?? sp.agenda).length > 0 && (
+                                                <ul className={`mt-0.5 flex flex-col ${META} ${SOFT}`}>
+                                                  {(C.speakerAgenda[key] ?? sp.agenda).map((x, j) => <li key={j} className="break-keep">{t(x)}</li>)}
+                                                </ul>
+                                              )}
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </li>
+                                  );
+                                })}
+                              </RevealList>
+                            </DayRow>
+                          )}
                           {(s.session || chips.length > 0) && (
-                            <DayRow label={t(d.sessionLabel)} first>
+                            <DayRow label={t(d.sessionLabel)} first={flow.length === 0}>
                               {s.session && (s.session.detail?.length ? (
                                 <ToggleTitle id={`session-${s.dayOffset}`} open={openSession === s.dayOffset} onToggle={() => setOpenSession((v) => (v === s.dayOffset ? null : s.dayOffset))} title={t(s.session.title)} lang="en" />
                               ) : (
@@ -472,7 +516,7 @@ export default function CrossingSeoul() {
                             </DayRow>
                           )}
                           {s.milestone ? (
-                            <DayRow label={t(d.milestoneLabel)} first={!s.session && chips.length === 0}>
+                            <DayRow label={t(d.milestoneLabel)} first={flow.length === 0 && !s.session && chips.length === 0}>
                               <MissionCard
                                 id={`mission-${s.dayOffset}`}
                                 title={t(C.milestone[s.dayOffset] ?? s.milestone)}
@@ -487,7 +531,7 @@ export default function CrossingSeoul() {
                               />
                             </DayRow>
                           ) : s.submit ? (
-                            <DayRow label={t(d.carryLabel)} first={!s.session && chips.length === 0}>
+                            <DayRow label={t(d.carryLabel)} first={flow.length === 0 && !s.session && chips.length === 0}>
                               <Disclosure
                                 id={`carry-${s.dayOffset}`}
                                 title={t(C.carryTitle)}
@@ -512,11 +556,8 @@ export default function CrossingSeoul() {
                           )}
                         </dl>
                       )}
-                      {(s.flow?.length || s.matchCta) && (
+                      {s.matchCta && (
                         <div className="mt-2 flex flex-wrap gap-x-6">
-                          {s.flow && s.flow.length > 0 && (
-                            <button type="button" aria-haspopup="dialog" onClick={() => setFlowDay(i)} className={LINK}>{t(C.dayFlowLabel)}</button>
-                          )}
                           {s.matchCta && (
                             <Link href={s.matchCta.href} onClick={() => track("naru_cta", { src: "day1", to: "match" })} className={LINK}>{t(C.matchLabel)}</Link>
                           )}
@@ -607,7 +648,7 @@ export default function CrossingSeoul() {
                     <h3 className={`text-[1.125rem] lg:text-[1.25rem] leading-[1.4] font-bold ${INK}`}>{t({ ko: "출제사", en: "Problem setters" })}</h3>
                     <div className="mt-3 flex flex-wrap justify-center gap-3">
                       {decemberProblemSetters.map((l) => (
-                        <PartnerCell key={l.name} l={l} area={3000} maxH={40} className={ROW4} />
+                        <PartnerCell key={l.name} l={l} area={l.square ? 5200 : 3000} maxH={l.square ? 68 : 40} className={ROW4} />
                       ))}
                     </div>
                   </div>
@@ -690,33 +731,6 @@ export default function CrossingSeoul() {
         labels={{ close: t(hero.photoClose), prev: t(hero.photoPrev), next: t(hero.photoNext) }}
       />
 
-      {(() => {
-        const st = flowDay != null ? stages[flowDay] : null;
-        return (
-          <DayFlowModal
-            onClose={() => setFlowDay(null)}
-            heading={t(C.dayFlowLabel)}
-            closeLabel={t(d.dayFlowClose)}
-            day={st && st.flow ? {
-              dayLabel: `${t(d.dayLabel)} ${st.dayOffset}`,
-              date: formatDecemberDayWithWeekday(locale, st.dayOffset),
-              title: t(st.title),
-              lead: t(C.line[st.dayOffset] ?? st.line),
-              venue: st.logo,
-              venueText: st.venueText && t(st.venueText),
-              venueNote: st.venueNote && t(st.venueNote),
-              rows: st.flow.map((r, k) => ({
-                time: r.time, what: t(C.flow[st.dayOffset]?.[k] ?? r.what), where: r.where && t(r.where), href: r.href,
-                speaker: r.speaker && {
-                  photo: r.speaker.photo, name: t(r.speaker.name), role: t(r.speaker.role),
-                  agendaLabel: t(C.speakerLabel[`${st.dayOffset}-${k}`] ?? r.speaker.agendaLabel),
-                  agenda: (C.speakerAgenda[`${st.dayOffset}-${k}`] ?? r.speaker.agenda).map(t),
-                },
-              })),
-            } : null}
-          />
-        );
-      })()}
 
     </>
   );

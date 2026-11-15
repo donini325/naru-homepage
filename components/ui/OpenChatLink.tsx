@@ -4,7 +4,7 @@ import { track } from "@vercel/analytics";
 import { trackOpenChat } from "@/lib/openChatCount";
 import { coreDict as dict, links, type Phrase } from "@/data/dictionaryCore";
 import ChatGlyph from "@/components/ChatGlyph";
-import { buttonClass, ARROW_CLASS } from "@/components/ui/Button";
+import { buttonClass } from "@/components/ui/Button";
 
 type Tfn = (p: Phrase) => string;
 
@@ -82,7 +82,6 @@ export default function OpenChatLink({
       >
         <ChatGlyph className="h-[18px] w-[18px]" />
         {t(label ?? dict.register.openChatCta)}
-        <span aria-hidden className={variant === "hero" ? ARROW_CLASS : "text-white/50"}>→</span>
       </a>
     );
   }
@@ -104,7 +103,6 @@ export default function OpenChatLink({
     >
       <ChatGlyph className="h-4 w-4 shrink-0" />
       {t(label ?? dict.register.openChatCta)}
-      <span aria-hidden className="text-white/50">→</span>
     </a>
   );
 }
