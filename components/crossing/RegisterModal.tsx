@@ -396,16 +396,22 @@ export default function RegisterModal({ open, onClose, onRegistered, refSource, 
                   <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-accent/40 bg-accent/10">
                     <svg aria-hidden width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="text-accent"><path d="M4 12.5l5 5L20 6.5" /></svg>
                   </span>
-                  <h3 ref={successRef} tabIndex={-1} id="crossing-register-title" className={`mt-6 ${LARGE} font-bold leading-tight text-white focus:outline-none`}>{t(copy.successTitle)}</h3>
+                  <h3 ref={successRef} tabIndex={-1} id="crossing-register-title" className="mt-6 text-[1.5rem] font-bold leading-tight text-white focus:outline-none sm:text-[1.75rem]">{t(copy.successTitle)}</h3>
                   {/* DECIDED 2026-11-02 (브리프 O2): 보낸 이름, 카카오톡 ID, 이메일을 그대로 되비칩니다. 오타를 잡을 곳이 이 화면 하나입니다.
                       예전 done 값("1")으로 열려 되비칠 값이 없으면 그리지 않습니다. 아래 한 줄은 고치는 길과 다시 보냈을 때 일어나는 일(O1). */}
                   {echo?.email && (
-                    <p id="crossing-register-echo" className={`mx-auto mt-3 max-w-sm break-keep ${BODY} leading-relaxed text-white/85`}>
-                      {t(copy.successEcho).replace("{name}", echo.name).replace("{contact}", echo.contact).replace("{email}", echo.email)}
-                    </p>
+                    // DECIDED 2026-11-16 (사용자: "줄 고치기"): 한 문장에 이어 쓰던 세 값을 이름, 카카오톡 ID, 이메일 세 줄의 표로. 틀린 값을 한눈에 찾게 합니다.
+                    <dl id="crossing-register-echo" aria-label={t(copy.successEchoLabel)} className={`mx-auto mt-4 w-full max-w-sm divide-y divide-white/10 rounded-xl border border-white/10 text-left ${META}`}>
+                      {([[copy.echoName, echo.name], [copy.echoContact, echo.contact], [copy.echoEmail, echo.email]] as const).map(([k, v]) => (
+                        <div key={k.en} className="flex items-baseline justify-between gap-4 px-4 py-2.5">
+                          <dt className="shrink-0 text-naru-muted">{t(k)}</dt>
+                          <dd className="min-w-0 break-all text-right font-semibold text-white">{v}</dd>
+                        </div>
+                      ))}
+                    </dl>
                   )}
-                  <p className={`mx-auto mt-2 max-w-sm break-keep ${META} leading-relaxed text-naru-muted`}>{t(copy.successResend)}</p>
-                  <p className={`mx-auto mt-3 max-w-sm break-keep ${BODY} leading-relaxed text-naru-muted`}>{t(copy.successBody)}</p>
+                  <p className={`mx-auto mt-3 max-w-sm break-keep ${META} leading-relaxed text-naru-muted`}>{t(copy.successResend)}</p>
+                  <p className={`mx-auto mt-6 max-w-sm break-keep ${BODY} leading-relaxed text-white/85`}>{t(copy.successBody)}</p>
                   {/* DECIDED 2026-10-15 (사용자): 소식은 오픈채팅으로만 나가므로, 이 화면에서 그 방으로 가는 버튼이 테스트 카드보다 먼저 섭니다. */}
                   {links.openChat && (
                     <a href={links.openChat} target="_blank" rel="noopener noreferrer" onClick={() => trackOpenChat("naru-register-success")} className={`${buttonClass("secondary", "naru")} mt-5 w-full max-w-sm justify-center`}>

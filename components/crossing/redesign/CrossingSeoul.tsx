@@ -460,31 +460,6 @@ export default function CrossingSeoul() {
                           {t(s.venueNote)}
                         </span>
                       )}
-                      {/* DECIDED 2026-11-15 (사용자: "하루 일정은 왼쪽으로. Day 1 Day 2 있는 곳에 일정이 펴지게"): 하루 일정은 날짜 칸 안, 장소 아래.
-                          노선이 그날을 지나면 펼쳐지고 줄이 차례로 떠오릅니다(한 번 펼치면 접지 않음). 폰에서는 날짜 줄 아래 한 줄을 다 씁니다. */}
-                      {s.flow && s.flow.length > 0 && (
-                        <div id={`flow-${s.dayOffset}`} className="w-full">
-                          <div className="pt-3 lg:pt-4">
-                            <p className={`${META} font-bold ${INK}`}>{t(C.dayFlowLabel)}</p>
-                            <RevealList as="ol" className={`mt-1.5 border-t ${RULE}`}>
-                              {s.flow.map((r, k) => (
-                                <li key={k} style={revealDelay(k)} className={`border-b ${RULE} py-2 ${REVEAL_ITEM}`}>
-                                  <p className={`break-keep ${META} ${INK}`}>
-                                    {r.time && <span className={`mr-1.5 font-semibold tabular-nums ${NAVY}`}>{r.time}</span>}
-                                    {t(C.flow[s.dayOffset]?.[k] ?? r.what)}
-                                  </p>
-                                  {r.speaker && <p className={`break-keep text-[0.875rem] leading-[1.5] ${SOFT}`}>{t(r.speaker.name)}</p>}
-                                  {r.where && (
-                                    <p className="break-keep text-[0.875rem] leading-[1.5] text-caption">
-                                      {r.href ? <Link href={r.href} className={`font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-[3px] hover:decoration-naru-navy`}>{t(r.where)}</Link> : t(r.where)}
-                                    </p>
-                                  )}
-                                </li>
-                              ))}
-                            </RevealList>
-                          </div>
-                        </div>
-                      )}
                     </div>
                     <div className="mt-3 min-w-0 lg:mt-0 lg:pl-10">
                       <h3 className={`break-keep ${HEADING} ${INK}`}>{t(s.title)}</h3>
@@ -528,6 +503,39 @@ export default function CrossingSeoul() {
                       {strip && <div className="mt-5 max-w-[42rem] lg:max-w-none">{strip}</div>}
                       {/* DECIDED 2026-11-15 (사용자: "하루 일정 보기에 있는 내용들은 Day 밑에 자동으로 비슷하게 나오게, 애니메이션으로", "멘토 보기를 없애줘"):
                           하루 일정과 그날의 멘토를 버튼 뒤 창 대신 그날 칸 안에 그립니다. 노선이 그날을 지나면 펼쳐지고 줄이 차례로 떠오릅니다(한 번 펼치면 접지 않음). */}
+                      {/* DECIDED 2026-11-16 (사용자: "그냥 오른쪽에 다시 두고", "이 시간표에 디자인을 좀 깔쌈하게"): 하루 일정은 본문 칸의 흰 카드.
+                          줄마다 순서 번호, 앞 구절(무엇)은 굵게, 뒤 설명은 옅게, 장소는 오른쪽. 순서가 곧 그날의 흐름이라 번호를 붙입니다. 화면에 들어오면 줄이 차례로 떠오릅니다. */}
+                      {s.flow && s.flow.length > 0 && (
+                        <div id={`flow-${s.dayOffset}`} className="mt-5 max-w-[42rem] lg:max-w-none">
+                          <p className={`${META} font-bold ${INK}`}>{t(C.dayFlowLabel)}</p>
+                          <RevealList as="ol" className="mt-2 rounded-2xl bg-[#FFFFFF] px-4 ring-1 ring-[#E3E0D8] sm:px-5">
+                            {s.flow.map((r, k) => {
+                              const text = t(C.flow[s.dayOffset]?.[k] ?? r.what);
+                              const cut = text.search(/[.:] /);
+                              const head = cut > 0 ? text.slice(0, cut) : text;
+                              const rest = cut > 0 ? text.slice(cut + 2) : "";
+                              return (
+                                <li key={k} style={revealDelay(k)} className={`grid grid-cols-[1.5rem_minmax(0,1fr)] gap-x-3 py-3.5 sm:grid-cols-[1.5rem_minmax(0,1fr)_minmax(0,11rem)] sm:gap-x-5 ${k > 0 ? `border-t ${RULE}` : ""} ${REVEAL_ITEM}`}>
+                                  <span aria-hidden className="mt-[3px] flex h-6 w-6 items-center justify-center rounded-full bg-[#EEF0F8] text-[0.8125rem] font-bold tabular-nums text-naru-navy">{k + 1}</span>
+                                  <div className="min-w-0">
+                                    <p className={`break-keep ${BODY} font-semibold ${INK}`}>
+                                      {r.time && <span className={`mr-2 tabular-nums ${NAVY}`}>{r.time}</span>}
+                                      {head}
+                                    </p>
+                                    {rest && <p className={`mt-0.5 break-keep ${META} ${SOFT}`}>{rest}</p>}
+                                    {r.speaker && <p className={`mt-1 break-keep ${META} ${INK}`}>{t(r.speaker.name)} <span className="text-caption">{t(r.speaker.role)}</span></p>}
+                                  </div>
+                                  {r.where && (
+                                    <p className={`col-start-2 mt-1 break-keep ${META} text-caption sm:col-start-3 sm:mt-0.5 sm:text-right`}>
+                                      {r.href ? <Link href={r.href} className={`font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-[3px] hover:decoration-naru-navy`}>{t(r.where)}</Link> : t(r.where)}
+                                    </p>
+                                  )}
+                                </li>
+                              );
+                            })}
+                          </RevealList>
+                        </div>
+                      )}
                       {mentorsOn && (
                         <div id={`mentors-${s.dayOffset}`} className="max-w-[42rem] lg:max-w-none">
                           <div className="pt-5">

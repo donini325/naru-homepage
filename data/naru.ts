@@ -158,7 +158,7 @@ export const openChatLabels = {
   // DECIDED 2026-10-13 (사용자, 스크린숏: "등록 소식 받기를 그냥 소식 받기 이런 느낌으로"): "카카오톡으로 등록 소식 받기"였습니다.
   december: { ko: "카카오톡으로 소식 받기", en: "Get news on KakaoTalk" },
   // 알림 버튼 바로 아래의 한 줄(META). 데스크톱에서 누르면 카카오톡 설치 안내만 뜹니다.
-  phoneHint: { ko: "휴대폰에서 열면 바로 들어갑니다.", en: "On a phone, it opens the chat directly." },
+  phoneHint: { ko: "컴퓨터에서는 설치 안내가 뜰 수 있어요. 휴대폰으로 열면 바로 들어가요.", en: "On a phone, it opens the chat directly." },
   join: { ko: "오픈채팅에서 소식 받기", en: "Get news in the open chat" },
   footer: { ko: "오픈채팅", en: "Open chat" },
 } as const;
@@ -289,18 +289,23 @@ export const register = {
   // DECIDED 2026-11-02 (브리프 O1, D4 함): 이 기기에서 등록을 마친 뒤의 버튼 라벨. 누르면 완료 화면이 다시 열립니다.
   registered: { ko: "등록했습니다", en: "You are registered" },
   registerAnother: { ko: "다른 사람으로 등록", en: "Register someone else" },
-  successTitle: { ko: "등록됐습니다.", en: "You are registered." },
+  successTitle: { ko: "등록됐어요", en: "You are registered" },
+  // DECIDED 2026-11-16 (사용자: "줄 고치기"): 되비침은 세 줄 표(RegisterModal). successEcho는 표의 이름표로 남깁니다.
+  successEchoLabel: { ko: "등록한 내용", en: "What you registered" },
+  echoName: { ko: "이름", en: "Name" },
+  echoContact: { ko: "카카오톡 ID", en: "KakaoTalk ID" },
+  echoEmail: { ko: "이메일", en: "Email" },
   // DECIDED 2026-11-02 (브리프 O2): 확인 메일이 없고(10/15) 카카오톡 ID는 형식 검사가 없어, 오타를 잡을 순간이 이 화면 하나입니다. 보낸 값을 그대로 되비칩니다.
   successEcho: { ko: "이름 {name}, 카카오톡 ID {contact}, 이메일 {email}로 등록됐습니다.", en: "Registered as {name}, KakaoTalk ID {contact}, {email}." },
   // DECIDED 2026-11-02 (브리프 O1, D4): 같은 이메일로 다시 보내면 서버는 처음 것을 남기고 조용히 201입니다(보안 감사 M3). 그 사실을 이 한 줄로 말합니다.
-  successResend: { ko: "고칠 것은 아래 주소로 알려 주세요. 같은 이메일로 다시 보내도 처음 것이 남습니다.", en: "Send corrections to the address below. Sending again with the same email keeps the first one." },
+  successResend: { ko: "틀린 게 있으면 맨 아래 주소로 알려 주세요. 같은 이메일로 다시 등록하면 처음 것이 남아요.", en: "Send corrections to the address below. Sending again with the same email keeps the first one." },
   // DECIDED 2026-10-08 (사용자: 등록 뒤 안내 메일은 "내가 수동으로"): 자동 메일을 약속하지 않습니다. 운영진이 직접
   // 보낸다고 적고, 오지 않을 때 할 일과 수정, 삭제의 길을 같이 적습니다. {email}은 등록한 주소로 바뀝니다.
   // DECIDED 2026-10-08 (사용자: 참가비와 장소, Day 0은 "참여자 대상 카톡방으로 공개"): 그 안내가 어디서 오는지도 여기서 말합니다.
   // DECIDED 2026-10-15 (사용자: "그냥 mention을 하지마 메일에 대해서", "계속 up to date 하려면 카톡으로 들어와야 한다고 해줘"):
   // 위 2026-10-08의 안내 메일 문장을 뺐습니다. 메일 이야기는 하지 않고, 소식은 오픈채팅으로 들어와야 받는다고만 씁니다.
   successBody: {
-    ko: "소식은 카카오톡 오픈채팅에서 알립니다. 계속 받으려면 지금 들어와 주세요. 장소와 Day 0 안내는 참가자 카카오톡 방에서 알립니다.",
+    ko: "소식은 카카오톡 오픈채팅에서 알려요. 지금 들어와 두면 놓치지 않아요. 장소와 Day 0 안내는 참가자 카카오톡 방에서 따로 드려요.",
     en: "News goes out in the KakaoTalk open chat. Join it now to stay up to date. Venue and Day 0 details are shared in the participant KakaoTalk room.",
   },
   // DECIDED 2026-10-15 (사용자, 스크린숏: "궁금한게 있으면 여기에 알려주세요"): 수정, 삭제 안내 대신 문의 한 줄.
