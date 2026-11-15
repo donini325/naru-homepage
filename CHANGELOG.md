@@ -8,6 +8,7 @@
 
 ### 2026-11
 
+- [2026-11-16 출제사 GroupBy, 멘토 순서, 알약 걷음](#2026-11-16-groupby)
 - [2026-11-16 멘토 칸 첫 버전, 8월부터 함께한 곳](#2026-11-16-mentors-first)
 - [2026-11-16 일정 화면을 첫 애니메이션 때로](#2026-11-16-schedule-revert)
 - [2026-11-16 하루 일정 카드, 완료 화면](#2026-11-16-flow-card)
@@ -560,6 +561,12 @@
 - [2026-06-15 Design-revamp polish cycle](#changelog-june-15-2026)
 
 ---
+
+<a id="2026-11-16-groupby"></a>
+## 2026-11-16 출제사 GroupBy, 멘토 순서, 알약 걷음
+- 범위: components/crossing/redesign/CrossingSeoul.tsx, data/naru.ts(decemberProblemSetters), public/partners/logos/paper/groupby.webp, components/shared/SiteHeader.tsx, components/ui/OpenChatLink.tsx, components/shared/MobileChatBar.tsx
+- 한 것: 사용자 요청. 함께하는 곳의 주최 아래에 출제사 묶음(GroupBy 로고, 후원 칸과 같은 카드). 스크롤로 펼쳐지는 멘토 칸을 날마다 그날 멘토만 정해 준 순서로(Day 2 허수진, 식품 기업 기획파트장, 김규리, 강상우 / Day 3 최우현, 강정민, 조동현, 이민재), 데스크톱 한 줄에 넷. AI 티: 미션 확인 방법의 알약 칩을 글자로, 미션 라벨의 ★ 삭제, 헤더 목차의 주황 점을 주황 밑줄로, 헤더 버튼과 오픈채팅 버튼의 알약 모양을 10px 모서리로
+- 검증: tsc 통과, 로컬 세 페이지 200
 
 <a id="2026-11-16-mentors-first"></a>
 ## 2026-11-16 멘토 칸 첫 버전, 8월부터 함께한 곳
