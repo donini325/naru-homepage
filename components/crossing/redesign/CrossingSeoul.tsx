@@ -28,6 +28,8 @@ import { SiteFooter } from "@/components/home/shared";
 import { copy as C } from "./copy";
 import { DISPLAY, TITLE, HEADING, BODY, META, INK, SOFT, NAVY, RULE, FRAME, BTN, BTN_GHOST, LINK, Lines } from "@/components/shared/redesign";
 
+// DECIDED 2026-11-17 (사용자: "버튼 크기들을 크게"): 등록과 오픈채팅 버튼을 48px에서 56px로, 글자 18px.
+const BIG = "!min-h-[56px] !rounded-[12px] px-8 !text-[1.125rem]";
 const BTN_LOCKED = `${BTN} w-full cursor-not-allowed gap-2 border border-dashed ${RULE} bg-transparent ${SOFT}`;
 
 const LOCK = (
@@ -334,7 +336,7 @@ export default function CrossingSeoul() {
         <button
           type="button"
           onClick={() => { track("naru_cta", { src, to: reg?.registered ? "registered" : "register" }); reg?.openRegister(); }}
-          className={`${BTN} bg-naru-navy text-[#fff] hover:bg-[#1D338A]`}
+          className={`${BTN} ${BIG} bg-naru-navy text-[#fff] hover:bg-[#1D338A]`}
         >
           {t(reg?.registered ? registerCopy.registered : registerCopy.cta)}
         </button>
@@ -345,7 +347,7 @@ export default function CrossingSeoul() {
           src={src}
           label={regState === "open" ? openChatLabels.join : openChatLabels.december}
           variant={regState === "open" ? "secondary" : "hero"}
-          className="!min-h-[48px] !rounded-[10px] max-sm:w-full"
+          className="!min-h-[56px] !rounded-[12px] !px-8 !text-[1.125rem] max-sm:w-full"
         />
       )}
       {regState === "not_open" && (
@@ -353,7 +355,7 @@ export default function CrossingSeoul() {
           type="button"
           aria-describedby={noteId}
           onClick={() => { track("naru_cta", { src, to: "register-preview" }); reg?.openRegister(); }}
-          className={`${BTN_GHOST} max-sm:w-full`}
+          className={`${BTN_GHOST} ${BIG} max-sm:w-full`}
         >
           {t(C.previewCta)}
         </button>
@@ -386,7 +388,7 @@ export default function CrossingSeoul() {
                   <Lines text={`${t(C.sub)}\n${t(C.naruLine)}`} />
                 </p>
                 <div className="mt-8">{ctas("naru-hero", "hero-register-note")}</div>
-                {regState !== "closed" && <p id="hero-register-note" className={`mt-3 break-keep ${META} ${SOFT}`}>{note}</p>}
+                {/* DECIDED 2026-11-17 (사용자): 버튼 아래 안내 한 줄("등록은 각자 해요…")을 뺐습니다. 팀 코드 안내는 등록 폼 안에 있습니다. */}
               </div>
 
               {/* DECIDED 2026-11-17 (사용자: "사진 위치를 조금 더 위로"): 데스크톱에서 64px 올려 제목 줄 옆까지 끌어올립니다. */}
