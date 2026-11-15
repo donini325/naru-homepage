@@ -12,6 +12,7 @@ import {
   openChatLabels,
   register as registerCopy,
   decemberPartners,
+  decemberProblemSetters,
 } from "@/data/naru";
 import { DECEMBER_EVENT_NAME, decemberEventLabel, formatDecemberDateLine, formatDecemberDayWithWeekday } from "@/lib/naruDates";
 import { TIMETABLE_OPEN } from "@/lib/crossingOps";
@@ -177,7 +178,7 @@ function MissionCard({ id, label, title, listLabel, rows, reward, upload, href }
         {rows.map((r) => (
           <li key={r.text} className={`flex flex-col gap-1.5 border-b ${RULE} py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4`}>
             <span className={`flex gap-2 break-keep ${META} ${INK}`}><span aria-hidden className="text-caption">☐</span>{r.text}</span>
-            {r.check && <span className={`ml-6 w-fit shrink-0 rounded-full bg-[#F0EEE8] px-2.5 py-0.5 ${META} ${SOFT} sm:ml-0`}>{r.check}</span>}
+            {r.check && <span className={`ml-6 shrink-0 ${META} text-caption sm:ml-0 sm:text-right`}>{r.check}</span>}
           </li>
         ))}
       </ul>
@@ -263,7 +264,13 @@ export default function CrossingSeoul() {
   // 한 번 펼친 칸은 위로 다시 올라가도 접지 않습니다. 읽던 자리 위에서 칸이 접히면 화면이 튀기 때문입니다.
   const [reached, setReached] = useState(0);
   useEffect(() => setReached((r) => Math.max(r, progress.passed)), [progress.passed]);
-  const confirmedMentors = d.mentors.filter((m) => m.confirmed);
+  // DECIDED 2026-11-16 (사용자: "데이 2 는 허수진, 식품 기업, 김규리, 강상우, 데이 3은 최우현 강정민 조동현 이민재. 4개가 한 줄에"): 날마다 그날 멘토만, 이 순서로.
+  const MENTOR_ORDER: Record<number, string[]> = {
+    2: ["허수진 님", "식품 기업 기획파트장", "김규리 님", "강상우 님"],
+    3: ["최우현 님", "강정민 님", "조동현 님", "이민재 님"],
+  };
+  const mentorsFor = (day: number) =>
+    (MENTOR_ORDER[day] ?? []).map((n) => d.mentors.find((m) => m.confirmed && m.name.ko === n)).filter((m): m is (typeof d.mentors)[number] => !!m);
 
   const name = locale === "en" ? (DECEMBER_EVENT_NAME?.en ?? decemberEventLabel(locale)) : (DECEMBER_EVENT_NAME?.ko ?? decemberEventLabel(locale));
   const note = t(regState === "open" ? C.noteOpen : C.noteShort);
@@ -397,7 +404,7 @@ export default function CrossingSeoul() {
                 const strip = s.milestone ? (
                   <MissionCard
                     id={`mission-${s.dayOffset}`}
-                    label={`★ ${t(d.milestoneLabel)}`}
+                    label={t(d.milestoneLabel)}
                     title={t(C.milestone[s.dayOffset] ?? s.milestone)}
                     listLabel={t(C.milestoneConditionsLabel)}
                     rows={(C.conditions[s.dayOffset] ?? s.milestoneDetail?.conditions ?? []).map((c, j) => {
@@ -505,8 +512,8 @@ export default function CrossingSeoul() {
                         <Collapse id={`mentors-${s.dayOffset}`} open={i < reached} className="max-w-[42rem] lg:max-w-none">
                           <div className="pt-4">
                             <p className={`${META} font-bold ${INK}`}>{t(d.mentorsListLabel)}</p>
-                            <ul className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                              {confirmedMentors.map((m, k) => (
+                            <ul className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-4">
+                              {mentorsFor(s.dayOffset).map((m, k) => (
                                 <li
                                   key={m.name.ko}
                                   style={{ transitionDelay: i < reached ? `${150 + k * 70}ms` : "0ms" }}
@@ -598,6 +605,15 @@ export default function CrossingSeoul() {
                           />
                         }
                       />
+                    </div>
+                  </div>
+
+                  <div className={GROUP}>
+                    <h3 className={`text-[1.125rem] lg:text-[1.25rem] leading-[1.4] font-bold ${INK}`}>{t({ ko: "출제사", en: "Problem setters" })}</h3>
+                    <div className="mt-3 flex flex-wrap justify-center gap-3">
+                      {decemberProblemSetters.map((l) => (
+                        <PartnerCell key={l.name} l={l} area={3000} maxH={40} className={ROW4} />
+                      ))}
                     </div>
                   </div>
 

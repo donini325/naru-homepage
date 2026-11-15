@@ -3693,6 +3693,11 @@ export const singaporeCampuses: { name: Phrase; src: string; w: number; h: numbe
 // 같은 날 (사용자: "작동이 안 되는 링크들이 있음, 블룸이랑 크라이치즈버거도 반드시 넣어줘"): translinkinvestment.com은 도메인이 없어
 // translink.kr로. AXMOS, Bloom(bloomworld.ai), 크라이치즈버거(crycheeseburger.com)에 링크를 넣었습니다. 모든 링크를 curl로 열어 봤습니다.
 // note: 로고 줄 아래 한 줄(2026-10-24, 사용자: "1일차에 lovable 현장 워크샵 진행"). 있는 줄에만 그립니다.
+// DECIDED 2026-11-16 (사용자: "주최 밑에다가 출제사를 밑에 있는 친구들처럼 두자", GroupBy 로고 이미지 전달): 크로싱 서울의 출제사. 함께하는 곳에서 주최 바로 아래.
+export const decemberProblemSetters: PartnerLogo[] = [
+  { name: "GroupBy", src: "/partners/logos/paper/groupby.webp", w: 845, h: 277 },
+];
+
 export const decemberPartners: { heading: Phrase; groups: { label: Phrase; lead?: PartnerLogo & { note: Phrase }; logos: PartnerLogo[]; note?: Phrase }[] } = {
   heading: { ko: "함께하는 곳", en: "With us in December" },
   groups: [
