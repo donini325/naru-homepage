@@ -150,7 +150,7 @@ function ToggleTitle({ id, open, onToggle, title, lang }: { id: string; open: bo
 /** 그날 카드의 한 칸. 왼쪽 좁은 칸에 이름(세션, 미션, 멘토), 오른쪽에 내용. 칸 이름은 모두 같은 크기와 색입니다. */
 function DayRow({ label, first, children }: { label: string; first?: boolean; children: ReactNode }) {
   return (
-    <div className={`grid gap-1.5 py-4 sm:grid-cols-[5rem_minmax(0,1fr)] sm:gap-5 ${first ? "" : `border-t ${RULE}`}`}>
+    <div className={`grid gap-1.5 py-4 sm:grid-cols-[5rem_minmax(0,1fr)] sm:gap-5 ${UNFOLD} ${first ? "" : `border-t ${RULE}`}`}>
       <dt className={`${META} font-semibold text-caption sm:pt-[3px]`}>{label}</dt>
       <dd className="min-w-0">{children}</dd>
     </div>
@@ -163,6 +163,38 @@ function DayRow({ label, first, children }: { label: string; first?: boolean; ch
  */
 const REVEAL_ITEM = "transition-[opacity,transform] duration-500 ease-out opacity-0 translate-y-1.5 group-data-[shown=true]:translate-y-0 group-data-[shown=true]:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:transition-none";
 const revealDelay = (k: number) => ({ transitionDelay: `${60 + k * 80}ms` });
+
+/**
+ * DECIDED 2026-11-17 (사용자: "배경 하얀거 다 없애. 스크롤 다운 하면서 펼쳐지는 느낌"): 그날 카드는 흰 상자 없이 위아래 선만 두고,
+ * 화면에 들어오면 칸이 위에서부터 차례로 펼쳐집니다(clip-path가 위에서 아래로 열리고 살짝 내려앉음). 칸의 높이는 처음부터 그대로라 아래가 밀리지 않습니다.
+ */
+const UNFOLD = "transition-[opacity,clip-path,transform] duration-700 ease-out opacity-0 -translate-y-1 [clip-path:inset(0_0_100%_0)] group-data-[shown=true]:translate-y-0 group-data-[shown=true]:opacity-100 group-data-[shown=true]:[clip-path:inset(0_0_0_0)] motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:[clip-path:none] motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:[clip-path:none] [html[data-motion=off]_&]:transition-none";
+
+function useShown<T extends Element>() {
+  const ref = useRef<T>(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") { setShown(true); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setShown(true); io.disconnect(); } }, { rootMargin: "0px 0px -10% 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return { ref, shown };
+}
+
+function DayCard({ children }: { children: ReactNode }) {
+  const { ref, shown } = useShown<HTMLDListElement>();
+  return (
+    <dl
+      ref={ref}
+      data-shown={shown}
+      className={`group mt-5 max-w-[42rem] border-y ${RULE} lg:max-w-none [&>*:nth-child(2)]:[transition-delay:140ms] [&>*:nth-child(3)]:[transition-delay:280ms] [&>*:nth-child(4)]:[transition-delay:420ms]`}
+    >
+      {children}
+    </dl>
+  );
+}
 
 function RevealList({ as: Tag = "ul", className = "", children }: { as?: "ul" | "ol"; className?: string; children: ReactNode }) {
   const ref = useRef<HTMLOListElement & HTMLUListElement>(null);
@@ -226,7 +258,7 @@ function logoSize(l: { w: number; h: number; boost?: boolean }, area: number, ma
 /** 후원 문의 메일을 받는 주소. */
 const SPONSOR_MAIL = "pjh030924@gmail.com";
 
-const CARD = "flex h-[5.5rem] items-center justify-center rounded-2xl bg-[#FFFFFF] px-3 ring-1 ring-[#E3E0D8] lg:h-24";
+const CARD = "flex h-[5.5rem] items-center justify-center rounded-2xl px-3 ring-1 ring-[#E3E0D8] lg:h-24";
 const CARD_LINK = "transition-colors hover:bg-[#F6F4EE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-naru-navy";
 const BANNER = "flex min-h-[5rem] items-center gap-5 rounded-2xl bg-[#F0EEE8] px-5 py-4 transition-colors hover:bg-[#E9E6DE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-naru-navy lg:px-7";
 /** 줄마다 칸 수가 같고, 남는 마지막 줄은 가운데로 모입니다. 칸 너비는 gap-3(0.75rem) 기준입니다. */
@@ -449,7 +481,7 @@ export default function CrossingSeoul() {
                           칸마다 왼쪽에 같은 크기의 이름(세션, 미션, 들고 갈 것, 멘토), 오른쪽에 본문 굵기의 제목. 누르면 펼쳐지는 것은 꺾쇠가 붙습니다.
                           그 전에는 세션 칩, 미션 카드, 링크 두 개, 멘토 카드가 저마다 다른 크기와 상자로 이어졌습니다. "멘토 보기" 버튼과 창은 멘토 칸이 대신합니다. */}
                       {hasPanel && (
-                        <dl className="mt-5 max-w-[42rem] rounded-2xl bg-[#FFFFFF] px-4 ring-1 ring-[#E3E0D8] sm:px-5 lg:max-w-none">
+                        <DayCard>
                           {/* DECIDED 2026-11-16 (사용자: "하루 일정 보기 안에 있는 내용을 다 꺼내. 하루 일정 보기를 지워"): 그날의 흐름이 카드 맨 위 칸입니다.
                               줄마다 앞 구절(무엇)은 굵게, 뒤 설명과 장소는 옅게. 화면에 들어오면 줄이 차례로 떠오릅니다. */}
                           {flow.length > 0 && (
@@ -554,7 +586,7 @@ export default function CrossingSeoul() {
                               </RevealList>
                             </DayRow>
                           )}
-                        </dl>
+                        </DayCard>
                       )}
                       {s.matchCta && (
                         <div className="mt-2 flex flex-wrap gap-x-6">
@@ -710,7 +742,7 @@ export default function CrossingSeoul() {
         {regState !== "closed" && (
           <section id="register" aria-labelledby="register-title" className="mt-14 pb-16 lg:mt-20 lg:pb-20">
             <div className={FRAME}>
-              <div className="rounded-[22px] bg-[#FFFFFF] px-6 py-10 ring-1 ring-[#E3E0D8] sm:px-10 sm:py-10 lg:px-12 lg:py-12">
+              <div className="rounded-[22px] px-6 py-10 ring-1 ring-[#E3E0D8] sm:px-10 sm:py-10 lg:px-12 lg:py-12">
                 <h2 id="register-title" className={`break-keep ${TITLE} ${INK}`}><Lines text={note} /></h2>
                 <div className="mt-8">{ctas("naru-december", "register-title")}</div>
               </div>

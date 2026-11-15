@@ -14,7 +14,7 @@ export const FRAME = "mx-auto w-full max-w-[75rem] px-5 sm:px-8 lg:px-10";
 
 export const BTN = "inline-flex min-h-[48px] items-center justify-center rounded-[10px] px-6 text-[1.0625rem] font-bold transition-[background-color,border-color] duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-naru-navy";
 export const BTN_PRIMARY = `${BTN} bg-naru-navy text-[#fff] hover:bg-[#1D338A]`;
-export const BTN_GHOST = `${BTN} border ${RULE} bg-[#FFFFFF] ${INK} hover:border-naru-navy/40`;
+export const BTN_GHOST = `${BTN} border ${RULE} bg-transparent ${INK} hover:border-naru-navy/40`;
 export const LINK = `inline-flex min-h-[44px] items-center ${META} font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-[5px] transition-colors hover:decoration-naru-navy`;
 
 /** 문구의 "\n"마다 데스크톱(lg 이상)에서 줄을 나눕니다. 폰에서는 한 문단으로 이어서 흐릅니다. */

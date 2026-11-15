@@ -52,6 +52,11 @@ const FOCUSABLE = "a[href], button:not([disabled]), input:not([disabled]):not([t
 // 16px보다 작은 입력칸에 포커스가 가면 화면을 확대하는데, BODY는 폰에서 15.75px입니다. 새 크기가 아니고(BODY가 이미
 // 쓰는 값), 이 폼은 TITLE을 쓰지 않으므로 한 화면의 크기는 폰에서 셋(18, 15.75, 13.5), 데스크톱에서 둘(18, 13.5)입니다.
 const LARGE = "text-base";
+
+/** 문장마다 한 줄로 끊어 그립니다(완료 화면의 안내, 2026-11-17). */
+function sentences(text: string) {
+  return text.split(/(?<=[.?!])\s+/).map((x, i) => <span key={i} className="block">{x}</span>);
+}
 // 테두리 white/45는 면 위에서 3:1을 넘고(1.4.11), 자리표시 글자 white/55는 6:1입니다(1.4.3). 그 전의 /12와 /35는 못 넘었습니다.
 // DECIDED 2026-10-21: 신청 폼은 라벨-입력, 도움말-오류 8px, 필드 사이는 24px로 맞춥니다.
 // DECIDED 2026-10-26 (사용자: "12월 이벤트의 모든 부분을 새 UI/UX로"): kwan-design 문법. 입력칸은 44px, 옅은 테두리, 올라온 면(naru-surface-2),
@@ -410,8 +415,9 @@ export default function RegisterModal({ open, onClose, onRegistered, refSource, 
                       ))}
                     </dl>
                   )}
-                  <p className={`mx-auto mt-3 max-w-sm break-keep ${META} leading-relaxed text-naru-muted`}>{t(copy.successResend)}</p>
-                  <p className={`mx-auto mt-6 max-w-sm break-keep ${BODY} leading-relaxed text-white/85`}>{t(copy.successBody)}</p>
+                  {/* DECIDED 2026-11-17 (사용자: "이거 줄 정리해"): 문장마다 한 줄. 표 바로 아래는 고치는 길(작게), 한 칸 띄우고 소식 안내(본문). */}
+                  <p className={`mx-auto mt-3 max-w-sm break-keep ${META} leading-relaxed text-naru-muted`}>{sentences(t(copy.successResend))}</p>
+                  <p className={`mx-auto mt-6 max-w-sm break-keep ${BODY} leading-relaxed text-white/85`}>{sentences(t(copy.successBody))}</p>
                   {/* DECIDED 2026-10-15 (사용자): 소식은 오픈채팅으로만 나가므로, 이 화면에서 그 방으로 가는 버튼이 테스트 카드보다 먼저 섭니다. */}
                   {links.openChat && (
                     <a href={links.openChat} target="_blank" rel="noopener noreferrer" onClick={() => trackOpenChat("naru-register-success")} className={`${buttonClass("secondary", "naru")} mt-5 w-full max-w-sm justify-center`}>

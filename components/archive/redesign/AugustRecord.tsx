@@ -51,7 +51,7 @@ const SPONSORS: string[] = [
  *  8월 로고는 어두운 배경용 흰 파일(white/trimmed)뿐이라 brightness-0으로 먹색 한 색이 되게 합니다. */
 function LogoCard({ src, alt, w, h }: { src: string; alt: string; w?: number; h?: number }) {
   return (
-    <li className="flex h-[5.5rem] items-center justify-center rounded-2xl bg-[#FFFFFF] px-4 ring-1 ring-[#E3E0D8] lg:h-24">
+    <li className="flex h-[5.5rem] items-center justify-center rounded-2xl px-4 ring-1 ring-[#E3E0D8] lg:h-24">
       <Image src={src} alt={alt} width={w ?? 300} height={h ?? 120} unoptimized className="block h-auto max-h-10 w-auto max-w-[8.5rem] object-contain brightness-0 opacity-75" />
     </li>
   );

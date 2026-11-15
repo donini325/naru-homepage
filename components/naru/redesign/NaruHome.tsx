@@ -232,7 +232,7 @@ export default function NaruHome() {
         {/* ── 매니페스토 ─────────────────────────────────────────────── */}
         <section id="join-ways" aria-labelledby="manifesto-title" className="mt-14 pb-16 lg:mt-20 lg:pb-20">
           <div className={FRAME}>
-            <div className="rounded-[22px] bg-[#FFFFFF] px-6 py-10 ring-1 ring-[#E3E0D8] sm:px-10 lg:grid lg:grid-cols-12 lg:gap-12 lg:px-12 lg:py-12">
+            <div className="rounded-[22px] px-6 py-10 ring-1 ring-[#E3E0D8] sm:px-10 lg:grid lg:grid-cols-12 lg:gap-12 lg:px-12 lg:py-12">
               <div className="lg:col-span-5">
                 <h2 id="manifesto-title" className={`${TITLE} ${INK}`}>{t(naru.join.manifesto.label)}</h2>
                 <p className={`mt-3 break-keep ${BODY} ${SOFT}`}><Lines text={t(C.manifestoBody)} /></p>
