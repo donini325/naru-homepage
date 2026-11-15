@@ -182,9 +182,14 @@ function useShown<T extends Element>() {
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof IntersectionObserver === "undefined") { setShown(true); return; }
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setShown(true); io.disconnect(); } }, { rootMargin: "0px 0px -22% 0px" });
+    // DECIDED 2026-11-17 (사용자: "위로 올려서 다시 내리면 애니메이션이 없어"): 화면 아래로 다시 빠지면(위로 스크롤) 숨기고, 다시 내려오면 또 나타납니다.
+    // 화면 위로 지나간 것은 숨기지 않습니다. 읽던 자리 위가 비지 않게 하려고요.
+    // 나타나는 것은 화면 아래 22% 선을 넘을 때, 숨는 것은 화면 밖으로 완전히 내려갔을 때입니다(보이는 채로 사라지지 않게).
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) setShown(true); }, { rootMargin: "0px 0px -22% 0px" });
+    const out = new IntersectionObserver(([e]) => { if (!e.isIntersecting && e.boundingClientRect.top > 0) setShown(false); });
     io.observe(el);
-    return () => io.disconnect();
+    out.observe(el);
+    return () => { io.disconnect(); out.disconnect(); };
   }, []);
   return { ref, shown };
 }
@@ -385,7 +390,7 @@ export default function CrossingSeoul() {
                   <span className="block"><Lines text={t(C.catchAnswer)} /></span>
                 </p>
                 <p className={`mt-5 max-w-[34rem] break-keep ${BODY} ${SOFT}`}>
-                  <Lines text={`${t(C.sub)}\n${t(C.naruLine)}`} />
+                  <Lines text={t(C.sub)} />
                 </p>
                 <div className="mt-8">{ctas("naru-hero", "hero-register-note")}</div>
                 {/* DECIDED 2026-11-17 (사용자): 버튼 아래 안내 한 줄("등록은 각자 해요…")을 뺐습니다. 팀 코드 안내는 등록 폼 안에 있습니다. */}
@@ -507,8 +512,8 @@ export default function CrossingSeoul() {
                                   const sp = r.speaker;
                                   const key = `${s.dayOffset}-${k}`;
                                   return (
-                                    <RevealItem key={k} className="grid grid-cols-[1.25rem_minmax(0,1fr)] gap-x-2">
-                                      <span aria-hidden className={`${META} font-semibold tabular-nums ${NAVY}`}>{k + 1}</span>
+                                    <RevealItem key={k} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-2">
+                                      <span aria-hidden className={`text-[1.375rem] font-bold leading-[1.1] tabular-nums ${NAVY}`}>{k + 1}</span>
                                       <div className="min-w-0">
                                         <p className={`break-keep ${META} font-semibold ${INK}`}>
                                           {r.time && <span className="mr-2 tabular-nums">{r.time}</span>}
@@ -521,8 +526,13 @@ export default function CrossingSeoul() {
                                           </p>
                                         )}
                                         {sp && (
-                                          <div className="mt-2 flex gap-3">
-                                            {sp.photo && <Image src={sp.photo} alt="" width={40} height={40} className="h-10 w-10 shrink-0 rounded-lg object-cover" />}
+                                          <div className="mt-2 flex gap-4">
+                                            {/* DECIDED 2026-11-17 (사용자: "사진들을 키워 옆에있는 텍스트랑 크기 맞추기"): 사진 높이가 옆 글(이름과 안건) 높이를 따라갑니다. */}
+                                            {sp.photo && (
+                                              <span className="relative w-20 shrink-0 self-stretch overflow-hidden rounded-xl sm:w-24">
+                                                <Image src={sp.photo} alt="" fill sizes="96px" className="object-cover" />
+                                              </span>
+                                            )}
                                             <div className="min-w-0">
                                               <p className={`break-keep ${META} font-semibold ${INK}`}>{t(sp.name)} <span className={`font-normal ${SOFT}`}>{t(sp.role)}</span></p>
                                               {(C.speakerAgenda[key] ?? sp.agenda).length > 0 && (
@@ -737,7 +747,10 @@ export default function CrossingSeoul() {
           <section id="register" aria-labelledby="register-title" className="mt-14 pb-16 lg:mt-20 lg:pb-20">
             <div className={FRAME}>
               <div className="rounded-[22px] px-6 py-10 ring-1 ring-[#E3E0D8] sm:px-10 sm:py-10 lg:px-12 lg:py-12">
-                <h2 id="register-title" className={`break-keep ${TITLE} ${INK}`}><Lines text={note} /></h2>
+                <h2 id="register-title" className={`break-keep ${TITLE} ${INK}`}>
+                  {/* DECIDED 2026-11-17 (사용자): 문장마다 다른 줄. */}
+                  {note.split(/(?<=[.?!])\s+/).map((x, k) => <span key={k} className="block">{x}</span>)}
+                </h2>
                 <div className="mt-8">{ctas("naru-december", "register-title")}</div>
               </div>
             </div>
