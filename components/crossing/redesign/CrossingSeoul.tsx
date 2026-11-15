@@ -43,7 +43,7 @@ function Stop({ arrive, passed = false, size = "md" }: { arrive: boolean; passed
   const look = arrive
     ? `bg-naru-orange ${passed ? "ring-4 ring-naru-orange/25" : ""}`
     : `border-[1.5px] border-naru-navy ${passed ? "bg-naru-navy" : "bg-[#FCFBF8]"}`;
-  return <span aria-hidden className={`relative z-10 block shrink-0 rounded-full transition-colors duration-300 motion-reduce:transition-none ${s} ${look}`} />;
+  return <span aria-hidden className={`relative z-10 block shrink-0 rounded-full transition-colors duration-300 motion-reduce:transition-none motion-reduce:animate-none ${passed ? "animate-[naruStopPop_520ms_cubic-bezier(0.16,1,0.3,1)]" : ""} ${s} ${look}`} />;
 }
 
 /**
@@ -163,8 +163,8 @@ function DayRow({ label, first, children }: { label: string; first?: boolean; ch
  * DECIDED 2026-11-16 (사용자: "너무 많은 정보가 다른 위계로 있어. 디자인 위계 바로잡고, 애니메이션 적절히"): 멘토는 처음부터 자리를 잡고,
  * 화면에 들어올 때 이름만 차례로 떠오릅니다. 높이가 바뀌지 않아 아래가 밀리지 않습니다. 한 번 보이면 다시 숨지 않고, 동작 줄이기면 처음부터 보입니다.
  */
-const REVEAL_ITEM = "transition-[opacity,transform] duration-500 ease-out opacity-0 translate-y-1.5 group-data-[shown=true]:translate-y-0 group-data-[shown=true]:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:transition-none";
-const revealDelay = (k: number) => ({ transitionDelay: `${60 + k * 80}ms` });
+const REVEAL_ITEM = "transition-[opacity,transform,filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-0 translate-y-3 blur-[3px] group-data-[shown=true]:translate-y-0 group-data-[shown=true]:blur-0 group-data-[shown=true]:opacity-100 motion-reduce:translate-y-0 motion-reduce:blur-0 motion-reduce:opacity-100 motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:blur-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:transition-none";
+const revealDelay = (k: number) => ({ transitionDelay: `${220 + k * 90}ms` });
 
 /**
  * DECIDED 2026-11-17 (사용자: "배경 하얀거 다 없애. 스크롤 다운 하면서 펼쳐지는 느낌"): 그날 카드는 흰 상자 없이 위아래 선만 두고,
@@ -172,7 +172,7 @@ const revealDelay = (k: number) => ({ transitionDelay: `${60 + k * 80}ms` });
  * 2026-11-17 같은 날 뒤(사용자: "day 1 에 펼쳐지는 느낌이 전혀 없어"): 카드 하나가 한 번에 열리면 긴 날(Day 1)은 위 칸이 열릴 때 아래 칸이 화면 밖이라 펼침이 안 보였습니다. 이제 칸마다 제 자리에 닿을 때 열립니다.
  * 2026-11-17 같은 날(사용자: "펼쳐지는 느낌을 주게"): 처음 값(0.7초, 4px, 0.14초 간격, 10% 지점)이 너무 약해 키웠습니다. 칸의 높이는 처음부터 그대로라 아래가 밀리지 않습니다.
  */
-const UNFOLD = "transition-[opacity,clip-path,transform] duration-[900ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] opacity-0 -translate-y-4 [clip-path:inset(0_0_100%_0)] data-[shown=true]:translate-y-0 data-[shown=true]:opacity-100 data-[shown=true]:[clip-path:inset(0_0_0_0)] motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:[clip-path:none] motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:[clip-path:none] [html[data-motion=off]_&]:transition-none";
+const UNFOLD = "origin-top transition-[opacity,clip-path,transform,filter] duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)] opacity-0 translate-y-6 scale-[0.985] blur-[2px] [clip-path:inset(0_0_100%_0)] data-[shown=true]:translate-y-0 data-[shown=true]:scale-100 data-[shown=true]:blur-0 data-[shown=true]:opacity-100 data-[shown=true]:[clip-path:inset(0_0_0_0)] motion-reduce:translate-y-0 motion-reduce:scale-100 motion-reduce:blur-0 motion-reduce:opacity-100 motion-reduce:[clip-path:none] motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:scale-100 [html[data-motion=off]_&]:blur-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:[clip-path:none] [html[data-motion=off]_&]:transition-none";
 
 function useShown<T extends Element>() {
   const ref = useRef<T>(null);
@@ -309,8 +309,6 @@ export default function CrossingSeoul() {
   const photos = hero.photos.filter((p) => !!p.src).slice(0, 4);
 
   const [photoOpen, setPhotoOpen] = useState<number | null>(null);
-  // 2026-11-09: 설명이 펼쳐진 세션(그날의 dayOffset). 한 번에 하나.
-  const [openSession, setOpenSession] = useState<number | null>(null);
   const progress = useScheduleProgress(stages.length);
   // DECIDED 2026-11-16 (사용자: "데이 2 는 허수진, 식품 기업, 김규리, 강상우, 데이 3은 최우현 강정민 조동현 이민재. 4개가 한 줄에"): 날마다 그날 멘토만, 이 순서로.
   const MENTOR_ORDER: Record<number, string[]> = {
@@ -450,9 +448,8 @@ export default function CrossingSeoul() {
               <span ref={progress.fillRef} aria-hidden style={{ transform: "scaleY(0)" }} className="absolute bottom-10 left-[5px] top-10 w-px origin-top bg-naru-navy will-change-transform lg:left-[calc(11rem+5px)]" />
               {stages.map((s, i) => {
                 const dayMentors = s.mentorsCta ? mentorsFor(s.dayOffset) : [];
-                const chips = (C.chips[s.dayOffset] ?? s.chips).map(t);
                 const flow = s.flow ?? [];
-                const hasPanel = flow.length > 0 || !!s.session || chips.length > 0 || !!s.milestone || !!s.submit || dayMentors.length > 0;
+                const hasPanel = flow.length > 0 || !!s.milestone || !!s.submit || dayMentors.length > 0;
                 return (
                   <li key={s.dayOffset} id={`day-${s.dayOffset}`} className={`relative grid scroll-mt-28 gap-x-10 border-b ${RULE} py-6 pl-8 lg:grid-cols-[11rem_minmax(0,1fr)] lg:py-7 lg:pl-0`}>
                     <span ref={(el) => { progress.stopRefs.current[i] = el; }} aria-hidden className="absolute left-0 top-[36px] lg:left-[11rem] lg:top-[48px]"><Stop arrive={s.dayOffset === 4} passed={i < progress.passed} /></span>
@@ -534,27 +531,9 @@ export default function CrossingSeoul() {
                               </RevealList>
                             </DayRow>
                           )}
-                          {(s.session || chips.length > 0) && (
-                            <DayRow label={t(d.sessionLabel)} first={flow.length === 0}>
-                              {s.session && (s.session.detail?.length ? (
-                                <ToggleTitle id={`session-${s.dayOffset}`} open={openSession === s.dayOffset} onToggle={() => setOpenSession((v) => (v === s.dayOffset ? null : s.dayOffset))} title={t(s.session.title)} lang="en" />
-                              ) : (
-                                <p lang="en" className={`${BODY} font-semibold ${INK}`}>{t(s.session.title)}</p>
-                              ))}
-                              {s.session?.detail?.length ? (
-                                <Collapse id={`session-${s.dayOffset}`} open={openSession === s.dayOffset}>
-                                  <ul className={`flex flex-col gap-1 pt-2 ${META} ${SOFT}`}>
-                                    {(C.sessionDetail[s.dayOffset] ?? s.session.detail).map((x, j) => (
-                                      <li key={j} className="break-keep">{t(x)}</li>
-                                    ))}
-                                  </ul>
-                                </Collapse>
-                              ) : null}
-                              {chips.length > 0 && <p className={`${s.session ? "mt-1" : ""} break-keep ${META} ${SOFT}`}>{chips.join(", ")}</p>}
-                            </DayRow>
-                          )}
+                          {/* DECIDED 2026-11-17 (사용자: "세션 / Lovable workshop … 현장에서 팀 꾸리기, 빌더 세션, Open tables 빼자"): 세션 칸을 뺐습니다. 일정 칸이 같은 내용을 말합니다. */}
                           {s.milestone ? (
-                            <DayRow label={t(d.milestoneLabel)} first={flow.length === 0 && !s.session && chips.length === 0}>
+                            <DayRow label={t(d.milestoneLabel)} first={flow.length === 0}>
                               <MissionCard
                                 id={`mission-${s.dayOffset}`}
                                 title={t(C.milestone[s.dayOffset] ?? s.milestone)}
@@ -569,7 +548,7 @@ export default function CrossingSeoul() {
                               />
                             </DayRow>
                           ) : s.submit ? (
-                            <DayRow label={t(d.carryLabel)} first={flow.length === 0 && !s.session && chips.length === 0}>
+                            <DayRow label={t(d.carryLabel)} first={flow.length === 0}>
                               <Disclosure
                                 id={`carry-${s.dayOffset}`}
                                 title={t(C.carryTitle)}
