@@ -163,8 +163,8 @@ function DayRow({ label, first, children }: { label: string; first?: boolean; ch
  * DECIDED 2026-11-16 (사용자: "너무 많은 정보가 다른 위계로 있어. 디자인 위계 바로잡고, 애니메이션 적절히"): 멘토는 처음부터 자리를 잡고,
  * 화면에 들어올 때 이름만 차례로 떠오릅니다. 높이가 바뀌지 않아 아래가 밀리지 않습니다. 한 번 보이면 다시 숨지 않고, 동작 줄이기면 처음부터 보입니다.
  */
-const REVEAL_ITEM = "transition-[opacity,transform,filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-0 translate-y-3 blur-[3px] group-data-[shown=true]:translate-y-0 group-data-[shown=true]:blur-0 group-data-[shown=true]:opacity-100 motion-reduce:translate-y-0 motion-reduce:blur-0 motion-reduce:opacity-100 motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:blur-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:transition-none";
-const revealDelay = (k: number) => ({ transitionDelay: `${220 + k * 90}ms` });
+const REVEAL_ITEM_BASE = "transition-[opacity,transform,filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-0 translate-y-3 blur-[3px] group-data-[shown=true]:translate-y-0 group-data-[shown=true]:blur-0 group-data-[shown=true]:opacity-100 motion-reduce:translate-y-0 motion-reduce:blur-0 motion-reduce:opacity-100 motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:blur-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:transition-none";
+const revealDelay = (k: number) => ({ transitionDelay: `${k * 110}ms` });
 
 /**
  * DECIDED 2026-11-17 (사용자: "배경 하얀거 다 없애. 스크롤 다운 하면서 펼쳐지는 느낌"): 그날 카드는 흰 상자 없이 위아래 선만 두고,
@@ -198,6 +198,13 @@ function DayCard({ children }: { children: ReactNode }) {
       {children}
     </dl>
   );
+}
+
+/** DECIDED 2026-11-17 (사용자: "통째로 말고 순서대로 스크롤 다운 하면서 나타나게"): 일정 줄과 멘토 이름이 저마다 화면에 닿을 때 하나씩 나타납니다. */
+const ITEM = REVEAL_ITEM_BASE.replaceAll("group-data-[shown=true]:", "data-[shown=true]:");
+function RevealItem({ className = "", style, children }: { className?: string; style?: React.CSSProperties; children: ReactNode }) {
+  const { ref, shown } = useShown<HTMLLIElement>();
+  return <li ref={ref} data-shown={shown} style={style} className={`${ITEM} ${className}`}>{children}</li>;
 }
 
 function RevealList({ as: Tag = "ul", className = "", children }: { as?: "ul" | "ol"; className?: string; children: ReactNode }) {
@@ -498,7 +505,7 @@ export default function CrossingSeoul() {
                                   const sp = r.speaker;
                                   const key = `${s.dayOffset}-${k}`;
                                   return (
-                                    <li key={k} style={revealDelay(k)} className={`grid grid-cols-[1.25rem_minmax(0,1fr)] gap-x-2 ${REVEAL_ITEM}`}>
+                                    <RevealItem key={k} className="grid grid-cols-[1.25rem_minmax(0,1fr)] gap-x-2">
                                       <span aria-hidden className={`${META} font-semibold tabular-nums ${NAVY}`}>{k + 1}</span>
                                       <div className="min-w-0">
                                         <p className={`break-keep ${META} font-semibold ${INK}`}>
@@ -525,7 +532,7 @@ export default function CrossingSeoul() {
                                           </div>
                                         )}
                                       </div>
-                                    </li>
+                                    </RevealItem>
                                   );
                                 })}
                               </RevealList>
@@ -563,10 +570,10 @@ export default function CrossingSeoul() {
                             <DayRow label={t({ ko: "멘토", en: "Mentors" })}>
                               <RevealList className="grid grid-cols-2 gap-x-5 gap-y-3 lg:grid-cols-4">
                                 {dayMentors.map((m, k) => (
-                                  <li key={m.name.ko} style={revealDelay(k)} className={REVEAL_ITEM}>
+                                  <RevealItem key={m.name.ko} style={revealDelay(k)}>
                                     <p className={`break-keep ${META} font-semibold ${INK}`}>{t(m.name)}</p>
                                     {t(m.org) && <p className={`break-keep text-[0.875rem] leading-[1.5] ${SOFT}`}>{t(m.org)}</p>}
-                                  </li>
+                                  </RevealItem>
                                 ))}
                               </RevealList>
                             </DayRow>
