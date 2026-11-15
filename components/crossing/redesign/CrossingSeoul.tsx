@@ -106,42 +106,76 @@ function Collapse({ id, open, className = "", children }: { id: string; open: bo
   );
 }
 
-/** 미션과 "들고 갈 것"을 펼치는 줄. 열면 라벨이 붙은 목록 둘. */
-function Disclosure({ id, label, title, groups, mission }: { id: string; label: string; title: string; groups: { label: string; items: string[] }[]; mission: boolean }) {
+/** "들고 갈 것"을 펼치는 줄. 그날 카드의 한 칸 안에 들어가 라벨은 칸이 붙이고, 여기서는 제목과 펼친 목록만 그립니다(2026-11-16 위계 정리). */
+function Disclosure({ id, title, groups }: { id: string; title: string; groups: { label: string; items: string[] }[] }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className={`rounded-xl border ${RULE} bg-[#FFFFFF]`}>
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={id}
-        onClick={() => setOpen((v) => !v)}
-        className="flex min-h-[52px] w-full items-center gap-3 rounded-xl px-4 py-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-naru-navy"
-      >
-        <span className={`shrink-0 ${META} font-bold ${mission ? "text-[#845185]" : "text-caption"}`}>{label}</span>
-        <span className={`min-w-0 flex-1 break-keep ${META} font-semibold ${INK} sm:text-[1.0625rem]`}>{title}</span>
-        <svg aria-hidden width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${SOFT} transition-transform duration-200 motion-reduce:transition-none ${open ? "rotate-180" : ""}`}>
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </button>
+    <div>
+      <ToggleTitle id={id} open={open} onToggle={() => setOpen((v) => !v)} title={title} />
       <Collapse id={id} open={open}>
-        <div className={`border-t ${RULE} px-4 pb-4 pt-3`}>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {groups.map((g) => (
-              <div key={g.label}>
-                <p className={`${META} font-bold ${INK}`}>{g.label}</p>
-                <ul className={`mt-1.5 flex flex-col gap-1 ${META} ${SOFT}`}>
-                  {g.items.map((it) => (
-                    <li key={it} className="flex gap-2 break-keep"><span aria-hidden className="text-caption">–</span>{it}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+        <div className="grid gap-4 pt-3 sm:grid-cols-2">
+          {groups.map((g) => (
+            <div key={g.label}>
+              <p className={`${META} font-semibold ${INK}`}>{g.label}</p>
+              <ul className={`mt-1 flex flex-col gap-1 ${META} ${SOFT}`}>
+                {g.items.map((it) => (
+                  <li key={it} className="break-keep">{it}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </Collapse>
     </div>
   );
+}
+
+/** 그날 카드의 칸 안에서 누르면 펼쳐지는 제목 한 줄. 본문 굵기, 오른쪽 끝에 꺾쇠. */
+function ToggleTitle({ id, open, onToggle, title, lang }: { id: string; open: boolean; onToggle: () => void; title: string; lang?: string }) {
+  return (
+    <button
+      type="button"
+      aria-expanded={open}
+      aria-controls={id}
+      onClick={onToggle}
+      className="-my-2 flex min-h-[44px] w-full items-center justify-between gap-3 rounded-md py-2 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-naru-navy"
+    >
+      <span lang={lang} className={`min-w-0 break-keep ${BODY} font-semibold ${INK}`}>{title}</span>
+      <svg aria-hidden width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${SOFT} transition-transform duration-200 motion-reduce:transition-none ${open ? "rotate-180" : ""}`}>
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </button>
+  );
+}
+
+/** 그날 카드의 한 칸. 왼쪽 좁은 칸에 이름(세션, 미션, 멘토), 오른쪽에 내용. 칸 이름은 모두 같은 크기와 색입니다. */
+function DayRow({ label, first, children }: { label: string; first?: boolean; children: ReactNode }) {
+  return (
+    <div className={`grid gap-1.5 py-4 sm:grid-cols-[5rem_minmax(0,1fr)] sm:gap-5 ${first ? "" : `border-t ${RULE}`}`}>
+      <dt className={`${META} font-semibold text-caption sm:pt-[3px]`}>{label}</dt>
+      <dd className="min-w-0">{children}</dd>
+    </div>
+  );
+}
+
+/**
+ * DECIDED 2026-11-16 (사용자: "너무 많은 정보가 다른 위계로 있어. 디자인 위계 바로잡고, 애니메이션 적절히"): 멘토는 처음부터 자리를 잡고,
+ * 화면에 들어올 때 이름만 차례로 떠오릅니다. 높이가 바뀌지 않아 아래가 밀리지 않습니다. 한 번 보이면 다시 숨지 않고, 동작 줄이기면 처음부터 보입니다.
+ */
+const REVEAL_ITEM = "transition-[opacity,transform] duration-500 ease-out opacity-0 translate-y-1.5 group-data-[shown=true]:translate-y-0 group-data-[shown=true]:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:transition-none";
+const revealDelay = (k: number) => ({ transitionDelay: `${60 + k * 80}ms` });
+
+function RevealList({ className = "", children }: { className?: string; children: ReactNode }) {
+  const ref = useRef<HTMLUListElement>(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") { setShown(true); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setShown(true); io.disconnect(); } }, { rootMargin: "0px 0px -10% 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <ul ref={ref} data-shown={shown} className={`group ${className}`}>{children}</ul>;
 }
 
 /**
@@ -150,43 +184,29 @@ function Disclosure({ id, label, title, groups, mission }: { id: string; label: 
  * 아래 두 줄은 받는 것과 때, 올리는 곳. "지원"이 무엇인지는 적지 않습니다(brand 8장, D5).
  * DECIDED 2026-11-09 (사용자, 스크린숏: "클릭하면 펼쳐지게"): D1을 되돌려 처음에는 제목 줄만 보이고, 누르면 조건 넷과 아래 두 줄이 펼쳐집니다.
  */
-function MissionCard({ id, label, title, listLabel, rows, reward, upload, href }: { id: string; label: string; title: string; listLabel: string; rows: { text: string; check: string }[]; reward: string; upload: string; href: string }) {
+function MissionCard({ id, title, listLabel, rows, reward, upload, href }: { id: string; title: string; listLabel: string; rows: { text: string; check: string }[]; reward: string; upload: string; href: string }) {
   const [open, setOpen] = useState(false);
   // "시간표 페이지"(EN "timetable page")만 링크로 그립니다. 글은 copy.ts와 data/naru.ts에 문장 그대로 둡니다.
   const m = upload.match(/시간표 페이지|timetable page/);
   const linkCls = `font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-[3px] transition-colors hover:decoration-naru-navy`;
   return (
-    <div className={`rounded-xl border ${RULE} bg-[#FFFFFF]`}>
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={id}
-        onClick={() => setOpen((v) => !v)}
-        className="flex min-h-[52px] w-full items-center gap-3 rounded-xl px-4 py-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-naru-navy"
-      >
-        <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-1">
-          <span className={`shrink-0 ${META} font-bold text-[#845185]`}>{label}</span>
-          <span className={`min-w-0 break-keep ${META} font-semibold ${INK} sm:text-[1.0625rem]`}>{title}</span>
-        </span>
-        <svg aria-hidden width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${SOFT} transition-transform duration-200 motion-reduce:transition-none ${open ? "rotate-180" : ""}`}>
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </button>
+    <div>
+      <ToggleTitle id={id} open={open} onToggle={() => setOpen((v) => !v)} title={title} />
       <Collapse id={id} open={open}>
-      <div className="px-4 pb-4">
-      <ul aria-label={listLabel} className={`border-t ${RULE}`}>
-        {rows.map((r) => (
-          <li key={r.text} className={`flex flex-col gap-1.5 border-b ${RULE} py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4`}>
-            <span className={`flex gap-2 break-keep ${META} ${INK}`}><span aria-hidden className="text-caption">☐</span>{r.text}</span>
-            {r.check && <span className={`ml-6 shrink-0 ${META} text-caption sm:ml-0 sm:text-right`}>{r.check}</span>}
-          </li>
-        ))}
-      </ul>
-      <p className={`mt-3 break-keep ${META} font-semibold ${INK}`}>{reward}</p>
-      <p className={`mt-1 break-keep ${META} ${SOFT}`}>
-        {m ? <>{upload.slice(0, m.index)}<Link href={href} className={linkCls}>{m[0]}</Link>{upload.slice(m.index! + m[0].length)}</> : upload}
-      </p>
-      </div>
+        <div className="pt-2">
+          <ul aria-label={listLabel}>
+            {rows.map((r) => (
+              <li key={r.text} className={`flex flex-col gap-0.5 border-b ${RULE} py-2 last:border-b-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4`}>
+                <span className={`flex gap-2 break-keep ${META} ${INK}`}><span aria-hidden className="text-caption">☐</span>{r.text}</span>
+                {r.check && <span className={`ml-6 shrink-0 ${META} text-caption sm:ml-0`}>{r.check}</span>}
+              </li>
+            ))}
+          </ul>
+          <p className={`mt-3 break-keep ${META} ${SOFT}`}>
+            {reward}{" "}
+            {m ? <>{upload.slice(0, m.index)}<Link href={href} className={linkCls}>{m[0]}</Link>{upload.slice(m.index! + m[0].length)}</> : upload}
+          </p>
+        </div>
       </Collapse>
     </div>
   );
@@ -258,12 +278,7 @@ export default function CrossingSeoul() {
   const [flowDay, setFlowDay] = useState<number | null>(null);
   // 2026-11-09: 설명이 펼쳐진 세션(그날의 dayOffset). 한 번에 하나.
   const [openSession, setOpenSession] = useState<number | null>(null);
-  const [mentorsDay, setMentorsDay] = useState<number | null>(null);
   const progress = useScheduleProgress(stages.length);
-  // DECIDED 2026-11-15 (사용자: "데이 1 데이 2 데이 3 이렇게 내릴 때 멘토 보기가 같이 열리면서 애니메이션"): 노선이 그날을 지나면 멘토 칸이 펼쳐집니다.
-  // 한 번 펼친 칸은 위로 다시 올라가도 접지 않습니다. 읽던 자리 위에서 칸이 접히면 화면이 튀기 때문입니다.
-  const [reached, setReached] = useState(0);
-  useEffect(() => setReached((r) => Math.max(r, progress.passed)), [progress.passed]);
   // DECIDED 2026-11-16 (사용자: "데이 2 는 허수진, 식품 기업, 김규리, 강상우, 데이 3은 최우현 강정민 조동현 이민재. 4개가 한 줄에"): 날마다 그날 멘토만, 이 순서로.
   const MENTOR_ORDER: Record<number, string[]> = {
     2: ["허수진 님", "식품 기업 기획파트장", "김규리 님", "강상우 님"],
@@ -399,34 +414,9 @@ export default function CrossingSeoul() {
               <span aria-hidden className="absolute bottom-10 left-[5px] top-10 w-px bg-naru-navy/25 lg:left-[calc(11rem+5px)]" />
               <span ref={progress.fillRef} aria-hidden style={{ transform: "scaleY(0)" }} className="absolute bottom-10 left-[5px] top-10 w-px origin-top bg-naru-navy will-change-transform lg:left-[calc(11rem+5px)]" />
               {stages.map((s, i) => {
-                const mentorsOn = s.mentorsCta && d.mentors.some((m) => m.confirmed);
-                // DECIDED 2026-11-08 (docs/mission-card-brief.md D1): 미션은 접는 띠 대신 펼친 카드. Day 1 "들고 갈 것" 띠는 그대로 Disclosure.
-                const strip = s.milestone ? (
-                  <MissionCard
-                    id={`mission-${s.dayOffset}`}
-                    label={t(d.milestoneLabel)}
-                    title={t(C.milestone[s.dayOffset] ?? s.milestone)}
-                    listLabel={t(C.milestoneConditionsLabel)}
-                    rows={(C.conditions[s.dayOffset] ?? s.milestoneDetail?.conditions ?? []).map((c, j) => {
-                      const k = s.milestoneDetail?.checks?.[j];
-                      return { text: t(c), check: k ? t(C.checkLabels[k]) : "" };
-                    })}
-                    reward={t(C.milestoneReward)}
-                    upload={t(C.milestoneUpload)}
-                    href={`/crossing/team?day=${s.dayOffset}`}
-                  />
-                ) : s.submit ? (
-                  <Disclosure
-                    id={`carry-${s.dayOffset}`}
-                    mission={false}
-                    label={t(d.carryLabel)}
-                    title={t(C.carryTitle)}
-                    groups={[
-                      { label: t(d.carryDetail.todoLabel), items: C.carryTodo.map(t) },
-                      { label: t(d.carrySubmitLabel), items: C.carrySubmit.map(t) },
-                    ]}
-                  />
-                ) : null;
+                const dayMentors = s.mentorsCta ? mentorsFor(s.dayOffset) : [];
+                const chips = (C.chips[s.dayOffset] ?? s.chips).map(t);
+                const hasPanel = !!s.session || chips.length > 0 || !!s.milestone || !!s.submit || dayMentors.length > 0;
                 return (
                   <li key={s.dayOffset} id={`day-${s.dayOffset}`} className={`relative grid scroll-mt-28 gap-x-10 border-b ${RULE} py-6 pl-8 lg:grid-cols-[11rem_minmax(0,1fr)] lg:py-7 lg:pl-0`}>
                     <span ref={(el) => { progress.stopRefs.current[i] = el; }} aria-hidden className="absolute left-0 top-[36px] lg:left-[11rem] lg:top-[48px]"><Stop arrive={s.dayOffset === 4} passed={i < progress.passed} /></span>
@@ -457,75 +447,80 @@ export default function CrossingSeoul() {
                     <div className="mt-3 min-w-0 lg:mt-0 lg:pl-10">
                       <h3 className={`break-keep ${HEADING} ${INK}`}>{t(s.title)}</h3>
                       <p className={`mt-2 max-w-[42rem] break-keep ${BODY} ${SOFT} lg:max-w-none`}><Lines text={t(C.line[s.dayOffset] ?? s.line)} /></p>
-                      {(s.session || s.chips.length > 0) && (
-                        <p className={`mt-4 flex flex-wrap gap-x-5 gap-y-1 ${META} text-caption`}>
-                          {/* DECIDED 2026-11-09 (사용자, 스크린숏: "각 세션 클릭하면 세션 설명이 나오게"): 세션 이름이 버튼이고, 누르면 아래에 설명이 펼쳐집니다. */}
-                          {s.session && (s.session.detail?.length ? (
-                            <button
-                              type="button"
-                              aria-expanded={openSession === s.dayOffset}
-                              aria-controls={`session-${s.dayOffset}`}
-                              onClick={() => setOpenSession((v) => (v === s.dayOffset ? null : s.dayOffset))}
-                              className="-my-2 inline-flex items-center gap-1.5 rounded-md py-2 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-naru-navy"
-                            >
-                              {t(d.sessionLabel)}{" "}
-                              <span lang="en" className={`font-semibold ${INK} underline decoration-naru-navy/30 decoration-dotted underline-offset-[4px]`}>{t(s.session.title)}</span>
-                              <svg aria-hidden width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 transition-transform duration-200 motion-reduce:transition-none ${openSession === s.dayOffset ? "rotate-180" : ""}`}>
-                                <path d="m6 9 6 6 6-6" />
-                              </svg>
-                            </button>
-                          ) : (
-                            <span>{t(d.sessionLabel)} <span lang="en" className={`font-semibold ${INK}`}>{t(s.session.title)}</span></span>
-                          ))}
-                          {(C.chips[s.dayOffset] ?? s.chips).map((c, j) => <span key={j}>{t(c)}</span>)}
-                        </p>
-                      )}
-                      {s.session?.detail?.length ? (
-                        <Collapse id={`session-${s.dayOffset}`} open={openSession === s.dayOffset} className="max-w-[42rem]">
-                          <div className="pt-3">
-                            <div className={`rounded-xl border ${RULE} bg-[#FFFFFF] px-4 py-3.5`}>
-                              <p lang="en" className={`${META} font-bold ${INK}`}>{t(s.session.title)}</p>
-                              <ul className={`mt-1.5 flex flex-col gap-1.5 ${META} ${SOFT}`}>
-                                {(C.sessionDetail[s.dayOffset] ?? s.session.detail).map((x, j) => (
-                                  <li key={j} className="break-keep leading-[1.65]">{t(x)}</li>
+                      {/* DECIDED 2026-11-16 (사용자: "너무 많은 정보가 다른 위계로 있어. 디자인 위계 바로잡고"): 그날 할 일을 흰 카드 하나에 칸으로 모읍니다.
+                          칸마다 왼쪽에 같은 크기의 이름(세션, 미션, 들고 갈 것, 멘토), 오른쪽에 본문 굵기의 제목. 누르면 펼쳐지는 것은 꺾쇠가 붙습니다.
+                          그 전에는 세션 칩, 미션 카드, 링크 두 개, 멘토 카드가 저마다 다른 크기와 상자로 이어졌습니다. "멘토 보기" 버튼과 창은 멘토 칸이 대신합니다. */}
+                      {hasPanel && (
+                        <dl className="mt-5 max-w-[42rem] rounded-2xl bg-[#FFFFFF] px-4 ring-1 ring-[#E3E0D8] sm:px-5 lg:max-w-none">
+                          {(s.session || chips.length > 0) && (
+                            <DayRow label={t(d.sessionLabel)} first>
+                              {s.session && (s.session.detail?.length ? (
+                                <ToggleTitle id={`session-${s.dayOffset}`} open={openSession === s.dayOffset} onToggle={() => setOpenSession((v) => (v === s.dayOffset ? null : s.dayOffset))} title={t(s.session.title)} lang="en" />
+                              ) : (
+                                <p lang="en" className={`${BODY} font-semibold ${INK}`}>{t(s.session.title)}</p>
+                              ))}
+                              {s.session?.detail?.length ? (
+                                <Collapse id={`session-${s.dayOffset}`} open={openSession === s.dayOffset}>
+                                  <ul className={`flex flex-col gap-1 pt-2 ${META} ${SOFT}`}>
+                                    {(C.sessionDetail[s.dayOffset] ?? s.session.detail).map((x, j) => (
+                                      <li key={j} className="break-keep">{t(x)}</li>
+                                    ))}
+                                  </ul>
+                                </Collapse>
+                              ) : null}
+                              {chips.length > 0 && <p className={`${s.session ? "mt-1" : ""} break-keep ${META} ${SOFT}`}>{chips.join(", ")}</p>}
+                            </DayRow>
+                          )}
+                          {s.milestone ? (
+                            <DayRow label={t(d.milestoneLabel)} first={!s.session && chips.length === 0}>
+                              <MissionCard
+                                id={`mission-${s.dayOffset}`}
+                                title={t(C.milestone[s.dayOffset] ?? s.milestone)}
+                                listLabel={t(C.milestoneConditionsLabel)}
+                                rows={(C.conditions[s.dayOffset] ?? s.milestoneDetail?.conditions ?? []).map((c, j) => {
+                                  const k = s.milestoneDetail?.checks?.[j];
+                                  return { text: t(c), check: k ? t(C.checkLabels[k]) : "" };
+                                })}
+                                reward={t(C.milestoneReward)}
+                                upload={t(C.milestoneUpload)}
+                                href={`/crossing/team?day=${s.dayOffset}`}
+                              />
+                            </DayRow>
+                          ) : s.submit ? (
+                            <DayRow label={t(d.carryLabel)} first={!s.session && chips.length === 0}>
+                              <Disclosure
+                                id={`carry-${s.dayOffset}`}
+                                title={t(C.carryTitle)}
+                                groups={[
+                                  { label: t(d.carryDetail.todoLabel), items: C.carryTodo.map(t) },
+                                  { label: t(d.carrySubmitLabel), items: C.carrySubmit.map(t) },
+                                ]}
+                              />
+                            </DayRow>
+                          ) : null}
+                          {dayMentors.length > 0 && (
+                            <DayRow label={t({ ko: "멘토", en: "Mentors" })}>
+                              <RevealList className="grid grid-cols-2 gap-x-5 gap-y-3 lg:grid-cols-4">
+                                {dayMentors.map((m, k) => (
+                                  <li key={m.name.ko} style={revealDelay(k)} className={REVEAL_ITEM}>
+                                    <p className={`break-keep ${META} font-semibold ${INK}`}>{t(m.name)}</p>
+                                    {t(m.org) && <p className={`break-keep text-[0.875rem] leading-[1.5] ${SOFT}`}>{t(m.org)}</p>}
+                                  </li>
                                 ))}
-                              </ul>
-                            </div>
-                          </div>
-                        </Collapse>
-                      ) : null}
-                      {strip && <div className="mt-5 max-w-[42rem] lg:max-w-none">{strip}</div>}
-                      {(s.flow?.length || s.matchCta || mentorsOn) && (
-                        <div className="mt-3 flex flex-wrap gap-x-6">
+                              </RevealList>
+                            </DayRow>
+                          )}
+                        </dl>
+                      )}
+                      {(s.flow?.length || s.matchCta) && (
+                        <div className="mt-2 flex flex-wrap gap-x-6">
                           {s.flow && s.flow.length > 0 && (
                             <button type="button" aria-haspopup="dialog" onClick={() => setFlowDay(i)} className={LINK}>{t(C.dayFlowLabel)}</button>
-                          )}
-                          {mentorsOn && (
-                            <button type="button" aria-haspopup="dialog" onClick={() => setMentorsDay(i)} className={LINK}>{t(d.mentorsCtaLabel)}</button>
                           )}
                           {s.matchCta && (
                             <Link href={s.matchCta.href} onClick={() => track("naru_cta", { src: "day1", to: "match" })} className={LINK}>{t(C.matchLabel)}</Link>
                           )}
                         </div>
-                      )}
-                      {mentorsOn && (
-                        <Collapse id={`mentors-${s.dayOffset}`} open={i < reached} className="max-w-[42rem] lg:max-w-none">
-                          <div className="pt-4">
-                            <p className={`${META} font-bold ${INK}`}>{t(d.mentorsListLabel)}</p>
-                            <ul className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-4">
-                              {mentorsFor(s.dayOffset).map((m, k) => (
-                                <li
-                                  key={m.name.ko}
-                                  style={{ transitionDelay: i < reached ? `${150 + k * 70}ms` : "0ms" }}
-                                  className={`rounded-xl bg-[#FFFFFF] px-4 py-3 ring-1 ring-[#E3E0D8] transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none [html[data-motion=off]_&]:transition-none ${i < reached ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}
-                                >
-                                  <p className={`${META} font-bold ${INK}`}>{t(m.name)}</p>
-                                  {t(m.org) && <p className={`break-keep ${META} ${SOFT}`}>{t(m.org)}</p>}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </Collapse>
                       )}
                       {s.voteCta && (
                         <div className="mt-5 max-w-[42rem]">
@@ -723,45 +718,6 @@ export default function CrossingSeoul() {
         );
       })()}
 
-      {(() => {
-        const st = mentorsDay != null ? stages[mentorsDay] : null;
-        const ms = d.mentors.filter((m) => m.confirmed);
-        return (
-          <DayFlowModal
-            onClose={() => setMentorsDay(null)}
-            heading={t(C.mentorsTalkLabel)}
-            closeLabel={t(d.dayFlowClose)}
-            day={st ? { dayLabel: `${t(d.dayLabel)} ${st.dayOffset}`, date: formatDecemberDayWithWeekday(locale, st.dayOffset), title: t(d.mentorsHeading), lead: t(C.mentorsIntro), rows: [] } : null}
-          >
-            {/* DECIDED 2026-11-09 (사용자, 멘토 브리프 장 스크린숏: "이거대로 update"): 세 묶음, 묶음마다 설명 뒤 따옴표 여럿. 끝에 점수 없는 자리 한 줄. */}
-            <ol className="grid gap-2.5">
-              {d.mentorsTalk.map((x, j) => (
-                <li key={j} className="flex flex-col gap-1.5 rounded-xl card-sunken px-4 py-3.5">
-                  <p className={`text-[0.9375rem] font-bold leading-snug ${INK}`}>{t(C.mentorsTalkTitles[j] ?? x.title)}</p>
-                  <p className={`break-keep ${META} ${SOFT}`}>{t(C.mentorsTalkBody[j])}</p>
-                  <ul className="mt-1.5 flex flex-col gap-1">
-                    {x.quotes.map((q, k) => (
-                      <li key={k} className={`break-keep ${META} font-semibold ${NAVY}`}>{t(q)}</li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ol>
-            <p className={`mt-3 break-keep ${META} font-bold ${INK}`}>{t(C.mentorsTalkNote)}</p>
-            <p className={`mt-7 border-t ${RULE} pt-5 ${META} font-bold ${INK}`}>{t(d.mentorsListLabel)}</p>
-            <p className={`mt-1 break-keep ${META} ${SOFT}`}>{t(C.mentorsListNote)}</p>
-            <ul className="mt-2 flex flex-col">
-              {ms.map((m) => (
-                <li key={m.name.ko} className={`flex flex-col gap-0.5 border-b ${RULE} py-3.5 last:border-b-0`}>
-                  <p className={`text-[0.9375rem] font-bold ${INK}`}>{t(m.name)}</p>
-                  {t(m.org) && <p className={`break-keep ${META} ${SOFT}`}>{t(m.org)} <span className="text-caption">{t(m.role)}</span></p>}
-                  {m.bio && <p className={`break-keep ${META} text-caption`}>{t(m.bio)}</p>}
-                </li>
-              ))}
-            </ul>
-          </DayFlowModal>
-        );
-      })()}
     </>
   );
 }

@@ -181,20 +181,19 @@ export default function NaruHome() {
               ))}
             </dl>
 
-            <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8">
-              {crew && (
-                <a href={crew.join.mail} onClick={() => track("naru_mail", { src: `how_${crew.join.id}` })} className={`${BTN_GHOST} self-start`}>
-                  {t(crew.join.label)}
-                </a>
-              )}
-              <div>
-                <p className={`break-keep ${META} ${SOFT}`}>{t(C.ask)}</p>
-                <p className={`${META} ${SOFT}`}>
-                  {t(partnerContact.addressLabel)}{" "}
-                  <a href={`mailto:${naruLinks.contact}`} className={`-my-3 inline-flex min-h-[44px] select-all items-center py-3 font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-4 hover:decoration-naru-navy`}>{naruLinks.contact}</a>
-                </p>
+            {/* DECIDED 2026-11-16 (사용자: "운영진으로 함께하기 버튼을 없애. 위에랑 같은 형식으로, 왼쪽에는 운영진으로 함께하기, 오른쪽에 부탁 두 가지와 메일 주소"): 위 회사가 얻는 것과 같은 두 칸 한 줄. */}
+            <dl className={`border-b ${RULE}`}>
+              <div className={`grid gap-1 py-5 sm:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] sm:gap-x-10 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:py-6`}>
+                <dt className={`break-keep ${BODY} font-bold ${INK}`}>{t(crew?.join.label ?? { ko: "운영진으로 함께하기", en: "Join the crew" })}</dt>
+                <dd className={`break-keep ${BODY} ${SOFT}`}>
+                  {t(C.ask)}
+                  <span className="mt-2 block">
+                    {t(partnerContact.addressLabel)}{" "}
+                    <a href={`mailto:${naruLinks.contact}`} onClick={() => track("naru_mail", { src: "how_crew" })} className={`-my-3 inline-flex min-h-[44px] select-all items-center py-3 font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-4 hover:decoration-naru-navy`}>{naruLinks.contact}</a>
+                  </span>
+                </dd>
               </div>
-            </div>
+            </dl>
           </div>
         </section>
 
