@@ -8,6 +8,7 @@
 
 ### 2026-11
 
+- [2026-11-17 배너 설명 키움, 글자 단 통일](#2026-11-17-type)
 - [2026-11-17 마무리 다듬기](#2026-11-17-refine)
 - [2026-11-17 다시 내려도 나타남, 연사 사진](#2026-11-17-replay)
 - [2026-11-17 히어로 버튼 키움](#2026-11-17-hero-buttons)
@@ -571,6 +572,12 @@
 - [2026-06-15 Design-revamp polish cycle](#changelog-june-15-2026)
 
 ---
+
+<a id="2026-11-17-type"></a>
+## 2026-11-17 배너 설명 키움, 글자 단 통일
+- 범위: components/crossing/redesign/CrossingSeoul.tsx, components/naru/redesign/NaruHome.tsx, components/archive/redesign/AugustRecord.tsx
+- 한 것: 사용자 요청. 주최(나루)와 8월부터 함께한 곳(AXMOS) 배너의 설명을 15px 옅은 글에서 17px 잉크색으로. 세 페이지에서 다섯 단(DISPLAY, TITLE, HEADING, BODY, META) 밖에 있던 크기를 단으로: 묶음 이름 18/20px → HEADING, 14px 글 → META, 일정 번호 → HEADING. 버튼 글자 18px만 남김
+- 검증: tsc 통과, 로컬 세 페이지 200
 
 <a id="2026-11-17-refine"></a>
 ## 2026-11-17 마무리 다듬기
