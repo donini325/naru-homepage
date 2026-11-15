@@ -335,7 +335,7 @@ export default function CrossingSeoul() {
   const name = locale === "en" ? (DECEMBER_EVENT_NAME?.en ?? decemberEventLabel(locale)) : (DECEMBER_EVENT_NAME?.ko ?? decemberEventLabel(locale));
   const note = t(regState === "open" ? C.noteOpen : C.noteShort);
 
-  const ctas = (src: "naru-hero" | "naru-december", noteId: string) => (
+  const ctas = (src: "naru-hero" | "naru-december", noteId?: string) => (
     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
       {regState === "open" && (
         <button
@@ -365,7 +365,7 @@ export default function CrossingSeoul() {
           {t(C.previewCta)}
         </button>
       )}
-      {regState === "closed" && <span className={`${BTN_GHOST} cursor-default ${SOFT}`}>{t(registerCopy.closed)}</span>}
+      {regState === "closed" && <span className={`${BTN_GHOST} ${BIG} cursor-default ${SOFT}`}>{t(registerCopy.closed)}</span>}
     </div>
   );
 
@@ -392,7 +392,7 @@ export default function CrossingSeoul() {
                 <p className={`mt-5 max-w-[34rem] break-keep ${BODY} ${SOFT}`}>
                   <Lines text={t(C.sub)} />
                 </p>
-                <div className="mt-8">{ctas("naru-hero", "hero-register-note")}</div>
+                <div className="mt-8">{ctas("naru-hero")}</div>
                 {/* DECIDED 2026-11-17 (사용자): 버튼 아래 안내 한 줄("등록은 각자 해요…")을 뺐습니다. 팀 코드 안내는 등록 폼 안에 있습니다. */}
               </div>
 
@@ -503,7 +503,7 @@ export default function CrossingSeoul() {
                               줄마다 앞 구절(무엇)은 굵게, 뒤 설명과 장소는 옅게. 화면에 들어오면 줄이 차례로 떠오릅니다. */}
                           {flow.length > 0 && (
                             <DayRow label={t({ ko: "일정", en: "Schedule" })} first>
-                              <RevealList as="ol" className="flex flex-col gap-3">
+                              <RevealList as="ol" className="flex flex-col gap-4">
                                 {flow.map((r, k) => {
                                   const text = t(C.flow[s.dayOffset]?.[k] ?? r.what);
                                   const cut = text.search(/[.:] /);
@@ -512,10 +512,11 @@ export default function CrossingSeoul() {
                                   const sp = r.speaker;
                                   const key = `${s.dayOffset}-${k}`;
                                   return (
-                                    <RevealItem key={k} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-2">
-                                      <span aria-hidden className={`text-[1.375rem] font-bold leading-[1.1] tabular-nums ${NAVY}`}>{k + 1}</span>
+                                    <RevealItem key={k} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-2">
+                                      <span aria-hidden className={`text-[1.25rem] font-bold leading-[1.35] tabular-nums ${NAVY}`}>{k + 1}</span>
                                       <div className="min-w-0">
-                                        <p className={`break-keep ${META} font-semibold ${INK}`}>
+                                        {/* 2026-11-17 마무리: 앞 구절은 본문 크기(17px)로 올려 번호(20px)와 한 줄에서 어울리게. 설명 15px, 장소 14px. */}
+                                        <p className={`break-keep ${BODY} font-semibold ${INK}`}>
                                           {r.time && <span className="mr-2 tabular-nums">{r.time}</span>}
                                           {head}
                                         </p>

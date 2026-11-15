@@ -131,12 +131,13 @@ export default function AugustRecord() {
 
         {/* ── 숫자: 신청에서 발표까지 ─────────────────────────────── */}
         <Section id="numbers" title={t(C.numbersHeading)}>
-          <ol className={`grid border-t ${RULE} sm:grid-cols-2 lg:grid-cols-4`}>
+          {/* 2026-11-17 마무리: 큰 숫자 아래 작은 라벨(템플릿 꼴) 대신 줄마다 숫자와 말을 한 문장처럼. 신청에서 발표까지 줄어든 순서라 위에서 아래로 읽습니다. */}
+          <ol className={`border-t ${RULE}`}>
             {C.numbers.map((n, i) => (
-              <li key={i} className={`border-b ${RULE} py-5 sm:pr-6 lg:border-b-0 lg:py-6 ${i > 0 ? "lg:border-l lg:pl-6" : ""}`}>
-                <p className={`${TITLE} tabular-nums ${i === 3 ? "text-naru-orange" : NAVY}`}>{t(n.value)}</p>
-                <p className={`mt-1 break-keep ${BODY} font-semibold ${INK}`}>{t(n.label)}</p>
-                {n.note && <p className={`mt-0.5 ${META} ${SOFT}`}>{t(n.note)}</p>}
+              <li key={i} className={`flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b ${RULE} py-4 lg:py-5`}>
+                <span className={`w-[4.5rem] shrink-0 ${HEADING} tabular-nums ${i === 3 ? "text-naru-orange" : NAVY}`}>{t(n.value)}</span>
+                <span className={`break-keep ${BODY} font-semibold ${INK}`}>{t(n.label)}</span>
+                {n.note && <span className={`${META} ${SOFT}`}>{t(n.note)}</span>}
               </li>
             ))}
           </ol>
