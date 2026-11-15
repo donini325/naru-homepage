@@ -8,6 +8,7 @@
 
 ### 2026-11
 
+- [2026-11-17 흰 상자 걷음, 펼쳐지는 그날 카드](#2026-11-17-unfold)
 - [2026-11-16 하루 일정을 카드 안으로, 화살표 걷음](#2026-11-16-flow-inline)
 - [2026-11-16 그날 카드로 위계 정리, 출제사 둘 더](#2026-11-16-day-card)
 - [2026-11-16 출제사 GroupBy, 멘토 순서, 알약 걷음](#2026-11-16-groupby)
@@ -563,6 +564,12 @@
 - [2026-06-15 Design-revamp polish cycle](#changelog-june-15-2026)
 
 ---
+
+<a id="2026-11-17-unfold"></a>
+## 2026-11-17 흰 상자 걷음, 펼쳐지는 그날 카드
+- 범위: components/crossing/redesign/CrossingSeoul.tsx, components/naru/redesign/NaruHome.tsx, components/archive/redesign/AugustRecord.tsx, components/shared/redesign.tsx, components/crossing/RegisterModal.tsx
+- 한 것: 사용자 요청. 흰 바탕을 모두 걷음(그날 카드는 위아래 선만, 로고 칸과 등록, 매니페스토 상자는 선만, BTN_GHOST는 투명). 그날 카드가 화면에 들어오면 칸이 위에서부터 차례로 펼쳐짐(clip-path, 높이 고정, 동작 줄이기면 바로). 등록 완료 화면의 안내를 문장마다 한 줄로
+- 검증: tsc 통과, 로컬 세 페이지 200
 
 <a id="2026-11-16-flow-inline"></a>
 ## 2026-11-16 하루 일정을 카드 안으로, 화살표 걷음
