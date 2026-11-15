@@ -303,7 +303,8 @@ function Banner({ href, external, logo, note, onClick }: { href: string; externa
   const body = (
     <>
       <span className="shrink-0">{logo}</span>
-      <span className={`min-w-0 flex-1 break-keep ${META} ${SOFT}`}>{note}</span>
+      {/* 2026-11-17 (사용자: 두 배너 설명 키워줘): 15px 옅은 글에서 본문 크기(17px) 잉크색으로. */}
+      <span className={`min-w-0 flex-1 break-keep ${BODY} ${INK}`}>{note}</span>
     </>
   );
   return external ? (
@@ -513,7 +514,7 @@ export default function CrossingSeoul() {
                                   const key = `${s.dayOffset}-${k}`;
                                   return (
                                     <RevealItem key={k} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-2">
-                                      <span aria-hidden className={`text-[1.25rem] font-bold leading-[1.35] tabular-nums ${NAVY}`}>{k + 1}</span>
+                                      <span aria-hidden className={`${HEADING} tabular-nums ${NAVY}`}>{k + 1}</span>
                                       <div className="min-w-0">
                                         {/* 2026-11-17 마무리: 앞 구절은 본문 크기(17px)로 올려 번호(20px)와 한 줄에서 어울리게. 설명 15px, 장소 14px. */}
                                         <p className={`break-keep ${BODY} font-semibold ${INK}`}>
@@ -522,7 +523,7 @@ export default function CrossingSeoul() {
                                         </p>
                                         {rest && <p className={`break-keep ${META} ${SOFT}`}>{rest}</p>}
                                         {r.where && (
-                                          <p className="break-keep text-[0.875rem] leading-[1.5] text-caption">
+                                          <p className="break-keep ${META} text-caption">
                                             {r.href ? <Link href={r.href} className={`font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-[3px] hover:decoration-naru-navy`}>{t(r.where)}</Link> : t(r.where)}
                                           </p>
                                         )}
@@ -585,7 +586,7 @@ export default function CrossingSeoul() {
                                 {dayMentors.map((m, k) => (
                                   <RevealItem key={m.name.ko} style={revealDelay(k)}>
                                     <p className={`break-keep ${META} font-semibold ${INK}`}>{t(m.name)}</p>
-                                    {t(m.org) && <p className={`break-keep text-[0.875rem] leading-[1.5] ${SOFT}`}>{t(m.org)}</p>}
+                                    {t(m.org) && <p className={`break-keep ${META} ${SOFT}`}>{t(m.org)}</p>}
                                   </RevealItem>
                                 ))}
                               </RevealList>
@@ -660,7 +661,7 @@ export default function CrossingSeoul() {
               return (
                 <>
                   <div id="naru" className="mt-6">
-                    <h3 className={`text-[1.125rem] lg:text-[1.25rem] leading-[1.4] font-bold ${INK}`}>{t(naru.teaser.eyebrow)}</h3>
+                    <h3 className={`${HEADING} ${INK}`}>{t(naru.teaser.eyebrow)}</h3>
                     <div className="mt-3">
                       <Banner
                         href={naru.teaser.cta.href}
@@ -682,7 +683,7 @@ export default function CrossingSeoul() {
                   </div>
 
                   <div className={GROUP}>
-                    <h3 className={`text-[1.125rem] lg:text-[1.25rem] leading-[1.4] font-bold ${INK}`}>{t({ ko: "출제사", en: "Problem setters" })}</h3>
+                    <h3 className={`${HEADING} ${INK}`}>{t({ ko: "출제사", en: "Problem setters" })}</h3>
                     <div className="mt-3 flex flex-wrap justify-center gap-3">
                       {decemberProblemSetters.map((l) => (
                         <PartnerCell key={l.name} l={l} area={l.square ? 5200 : 3000} maxH={l.square ? 68 : 40} className={ROW4} />
@@ -691,7 +692,7 @@ export default function CrossingSeoul() {
                   </div>
 
                   <div className={GROUP}>
-                    <h3 className={`text-[1.125rem] lg:text-[1.25rem] leading-[1.4] font-bold ${INK}`}>{t(main.label)}</h3>
+                    <h3 className={`${HEADING} ${INK}`}>{t(main.label)}</h3>
                     {main.lead && (
                       <div className="mt-3">
                         <Banner
@@ -710,7 +711,7 @@ export default function CrossingSeoul() {
                   </div>
 
                   <div className={GROUP}>
-                    <h3 className={`text-[1.125rem] lg:text-[1.25rem] leading-[1.4] font-bold ${INK}`}>{t({ ko: "후원", en: "Sponsors and partners" })}</h3>
+                    <h3 className={`${HEADING} ${INK}`}>{t({ ko: "후원", en: "Sponsors and partners" })}</h3>
                     <div className="mt-3 flex flex-wrap justify-center gap-x-3 gap-y-5">
                       {others.map(({ l, caption }) => (
                         <PartnerCell key={l.name} l={l} caption={caption} area={2600} maxH={42} className={ROW4} />

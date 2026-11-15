@@ -61,7 +61,7 @@ function LogoCard({ src, alt, w, h }: { src: string; alt: string; w?: number; h?
 function People({ label, people }: { label: string; people: { name: string; org: string }[] }) {
   return (
     <div>
-      <h3 className={`text-[1.125rem] font-bold leading-[1.4] lg:text-[1.25rem] ${INK}`}>{label}</h3>
+      <h3 className={`${HEADING} ${INK}`}>{label}</h3>
       <ul className={`mt-3 border-t ${RULE}`}>
         {people.map((p) => (
           <li key={p.name} className={`flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 border-b ${RULE} py-3`}>
@@ -203,7 +203,7 @@ export default function AugustRecord() {
         <Section id="partners" title={t(C.partnersHeading)} lead={t(C.partnersNote)}>
           <div className="flex flex-col gap-8">
             <div>
-              <h3 className={`text-[1.125rem] font-bold leading-[1.4] lg:text-[1.25rem] ${INK}`}>{t(C.hostLabel)}</h3>
+              <h3 className={`${HEADING} ${INK}`}>{t(C.hostLabel)}</h3>
               <div className="mt-3 flex items-center gap-5 rounded-2xl bg-[#F0EEE8] px-5 py-4 lg:px-7">
                 <Image src="/partners/logos/paper/axmos-wordmark.png" alt="AXMOS" width={600} height={120} unoptimized className="block h-7 w-auto shrink-0" />
                 <span className={`min-w-0 break-keep ${META} ${SOFT}`}>{t(dict.partners.axmosTagline)}</span>
@@ -211,11 +211,11 @@ export default function AugustRecord() {
               <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">{HOSTS.map((l) => <LogoCard key={l.alt} {...l} />)}</ul>
             </div>
             <div className={`border-t ${RULE} pt-6`}>
-              <h3 className={`text-[1.125rem] font-bold leading-[1.4] lg:text-[1.25rem] ${INK}`}>{t(C.organizersLabel)}</h3>
+              <h3 className={`${HEADING} ${INK}`}>{t(C.organizersLabel)}</h3>
               <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">{ORGANIZERS.map((l) => <LogoCard key={l.alt} {...l} />)}</ul>
             </div>
             <div className={`border-t ${RULE} pt-6`}>
-              <h3 className={`text-[1.125rem] font-bold leading-[1.4] lg:text-[1.25rem] ${INK}`}>{t(C.sponsorsLabel)}</h3>
+              <h3 className={`${HEADING} ${INK}`}>{t(C.sponsorsLabel)}</h3>
               <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                 {SPONSORS.map((s) => {
                   const [file, alt] = s.split(":");
