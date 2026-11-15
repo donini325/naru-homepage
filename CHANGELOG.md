@@ -8,6 +8,7 @@
 
 ### 2026-11
 
+- [2026-11-16 그날 카드로 위계 정리, 출제사 둘 더](#2026-11-16-day-card)
 - [2026-11-16 출제사 GroupBy, 멘토 순서, 알약 걷음](#2026-11-16-groupby)
 - [2026-11-16 멘토 칸 첫 버전, 8월부터 함께한 곳](#2026-11-16-mentors-first)
 - [2026-11-16 일정 화면을 첫 애니메이션 때로](#2026-11-16-schedule-revert)
@@ -561,6 +562,12 @@
 - [2026-06-15 Design-revamp polish cycle](#changelog-june-15-2026)
 
 ---
+
+<a id="2026-11-16-day-card"></a>
+## 2026-11-16 그날 카드로 위계 정리, 출제사 둘 더
+- 범위: components/crossing/redesign/CrossingSeoul.tsx, components/naru/redesign/NaruHome.tsx, data/naru.ts, public/partners/logos/paper/(lazy-yogurt, feed-media).webp
+- 한 것: 사용자 요청("너무 많은 정보가 다른 위계로 있어"). 그날의 세션, 미션(또는 들고 갈 것), 멘토를 흰 카드 하나의 칸으로(DayRow: 왼쪽 같은 크기의 칸 이름, 오른쪽 본문 굵기 제목, 펼치는 것은 꺾쇠). 세션 칩은 세션 칸의 한 줄로, 미션의 보라 라벨과 안쪽 상자를 걷음. "멘토 보기" 버튼과 창 삭제, 멘토 이름은 화면에 들어오면 차례로 떠오름(높이 고정). 하루 일정 보기는 카드 아래 글자 링크로 남김. 출제사에 Lazy Yogurt, Feed Media. 나루 홈 "운영진으로 함께하기" 버튼을 없애고 회사가 얻는 것과 같은 두 칸 한 줄로(왼쪽 이름, 오른쪽 부탁 두 가지와 메일 주소)
+- 검증: tsc 통과, 로컬 세 페이지 200. 화면으로는 확인하지 못함
 
 <a id="2026-11-16-groupby"></a>
 ## 2026-11-16 출제사 GroupBy, 멘토 순서, 알약 걷음
