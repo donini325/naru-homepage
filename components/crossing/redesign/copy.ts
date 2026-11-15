@@ -21,13 +21,13 @@ export const copy = {
   photosCaption: ko("8월 싱가포르, 제로백 빌더톤", h.photosCaption),
   photosMore: (n: number): Phrase => ({ ko: `사진 ${n}장 더 보기`, en: `View ${n} photos` }),
 
-  noteShort: ko("등록 시작은 11월 16일(월).\n팀 없이 혼자 등록하면 돼요.", registerNoteShort),
-  noteOpen: ko("팀 없이 혼자 등록하면 돼요.", registerNoteOpen),
+  noteShort: ko("등록 시작은 11월 16일(월).\n한 사람씩 등록하고, 같이 할 사람과는 팀 코드를 맞춰요.", registerNoteShort),
+  noteOpen: ko("한 사람씩 등록하고, 같이 할 사람과는 팀 코드를 맞춰요.", registerNoteOpen),
   previewCta: ko("등록 폼 먼저 보기", registerCopy.previewCta),
 
   programHeading: ko("닷새, 이렇게 보내요", d.programHeading),
   scheduleLead: ko(
-    "등록은 혼자, 팀은 Day 1 현장에서.\n규칙은 하나에요: AI가 쓴 걸 고치지 말고, 내가 쓴 걸 AI한테 고치게 할 것.\n닷새 안에 다 못 풀어도 괜찮아요. 중요한 건 답보다, 얼마나 깊이 팠는지예요.",
+    "등록은 한 사람씩, 팀은 Day 1 현장에서. 같이 할 사람은 팀 코드로 미리 묶여요.\n규칙은 하나에요: AI가 쓴 걸 고치지 말고, 내가 쓴 걸 AI한테 고치게 할 것.\n닷새 안에 다 못 풀어도 괜찮아요. 중요한 건 답보다, 얼마나 깊이 팠는지예요.",
     d.scheduleLead,
   ),
   facts: kos(

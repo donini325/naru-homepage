@@ -88,6 +88,27 @@ function useScheduleProgress(count: number) {
 }
 
 /**
+ * DECIDED 2026-11-16 (사용자: "뭔가 이상해. 애니메이션 다 고치고"): 하루 일정과 멘토는 처음부터 자리를 차지하고, 화면에 들어올 때 줄만 차례로 떠오릅니다.
+ * 그 전(11-15)에는 노선이 지나야 칸이 펼쳐져서, 읽는 도중 아래 내용이 밀려 내려가고 점과 선의 위치도 같이 흔들렸습니다. 이제 높이는 바뀌지 않고 opacity와 transform만 움직입니다.
+ * 한 번 보이면 다시 숨지 않습니다. 동작 줄이기(OS)와 html[data-motion=off]면 처음부터 보입니다.
+ */
+const REVEAL_ITEM = "transition-[opacity,transform] duration-500 ease-out opacity-0 translate-y-2 group-data-[shown=true]:translate-y-0 group-data-[shown=true]:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:transition-none";
+const revealDelay = (k: number) => ({ transitionDelay: `${80 + k * 70}ms` });
+
+function RevealList({ as: Tag, className = "", children }: { as: "ol" | "ul"; className?: string; children: ReactNode }) {
+  const ref = useRef<HTMLOListElement & HTMLUListElement>(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") { setShown(true); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setShown(true); io.disconnect(); } }, { rootMargin: "0px 0px -12% 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <Tag ref={ref} data-shown={shown} className={`group ${className}`}>{children}</Tag>;
+}
+
+/**
  * DECIDED 2026-11-11 (사용자: 세션 설명과 "들고 갈 것"이 부드럽게 펼쳐지게): 높이가 0.2초 동안 열립니다(grid-rows 0fr→1fr).
  * 닫혀 있으면 inert라 포커스와 화면 낭독기가 건너뜁니다. 위 간격은 안쪽에 두어야 닫혔을 때 남지 않습니다.
  * 동작 줄이기(OS)나 사이트의 움직임 끄기(html[data-motion=off])면 바로 열립니다.
@@ -256,10 +277,6 @@ export default function CrossingSeoul() {
   // 2026-11-09: 설명이 펼쳐진 세션(그날의 dayOffset). 한 번에 하나.
   const [openSession, setOpenSession] = useState<number | null>(null);
   const progress = useScheduleProgress(stages.length);
-  // DECIDED 2026-11-15 (사용자: "데이 1 데이 2 데이 3 이렇게 내릴 때 멘토 보기가 같이 열리면서 애니메이션"): 노선이 그날을 지나면 멘토 칸이 펼쳐집니다.
-  // 한 번 펼친 칸은 위로 다시 올라가도 접지 않습니다. 읽던 자리 위에서 칸이 접히면 화면이 튀기 때문입니다.
-  const [reached, setReached] = useState(0);
-  useEffect(() => setReached((r) => Math.max(r, progress.passed)), [progress.passed]);
 
   const name = locale === "en" ? (DECEMBER_EVENT_NAME?.en ?? decemberEventLabel(locale)) : (DECEMBER_EVENT_NAME?.ko ?? decemberEventLabel(locale));
   const note = t(regState === "open" ? C.noteOpen : C.noteShort);
@@ -446,16 +463,12 @@ export default function CrossingSeoul() {
                       {/* DECIDED 2026-11-15 (사용자: "하루 일정은 왼쪽으로. Day 1 Day 2 있는 곳에 일정이 펴지게"): 하루 일정은 날짜 칸 안, 장소 아래.
                           노선이 그날을 지나면 펼쳐지고 줄이 차례로 떠오릅니다(한 번 펼치면 접지 않음). 폰에서는 날짜 줄 아래 한 줄을 다 씁니다. */}
                       {s.flow && s.flow.length > 0 && (
-                        <Collapse id={`flow-${s.dayOffset}`} open={i < reached} className="w-full">
+                        <div id={`flow-${s.dayOffset}`} className="w-full">
                           <div className="pt-3 lg:pt-4">
                             <p className={`${META} font-bold ${INK}`}>{t(C.dayFlowLabel)}</p>
-                            <ol className={`mt-1.5 border-t ${RULE}`}>
+                            <RevealList as="ol" className={`mt-1.5 border-t ${RULE}`}>
                               {s.flow.map((r, k) => (
-                                <li
-                                  key={k}
-                                  style={{ transitionDelay: i < reached ? `${150 + k * 70}ms` : "0ms" }}
-                                  className={`border-b ${RULE} py-2 transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none [html[data-motion=off]_&]:transition-none ${i < reached ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}
-                                >
+                                <li key={k} style={revealDelay(k)} className={`border-b ${RULE} py-2 ${REVEAL_ITEM}`}>
                                   <p className={`break-keep ${META} ${INK}`}>
                                     {r.time && <span className={`mr-1.5 font-semibold tabular-nums ${NAVY}`}>{r.time}</span>}
                                     {t(C.flow[s.dayOffset]?.[k] ?? r.what)}
@@ -468,9 +481,9 @@ export default function CrossingSeoul() {
                                   )}
                                 </li>
                               ))}
-                            </ol>
+                            </RevealList>
                           </div>
-                        </Collapse>
+                        </div>
                       )}
                     </div>
                     <div className="mt-3 min-w-0 lg:mt-0 lg:pl-10">
@@ -516,19 +529,19 @@ export default function CrossingSeoul() {
                       {/* DECIDED 2026-11-15 (사용자: "하루 일정 보기에 있는 내용들은 Day 밑에 자동으로 비슷하게 나오게, 애니메이션으로", "멘토 보기를 없애줘"):
                           하루 일정과 그날의 멘토를 버튼 뒤 창 대신 그날 칸 안에 그립니다. 노선이 그날을 지나면 펼쳐지고 줄이 차례로 떠오릅니다(한 번 펼치면 접지 않음). */}
                       {mentorsOn && (
-                        <Collapse id={`mentors-${s.dayOffset}`} open={i < reached} className="max-w-[42rem] lg:max-w-none">
+                        <div id={`mentors-${s.dayOffset}`} className="max-w-[42rem] lg:max-w-none">
                           <div className="pt-5">
                             <p className={`${META} font-bold ${INK}`}>{t(d.mentorsListLabel)}</p>
-                            <ul className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                            <RevealList as="ul" className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                               {dayMentors.map((m, k) => (
-                                <li key={m.name.ko} style={{ transitionDelay: i < reached ? `${150 + k * 70}ms` : "0ms" }} className={`rounded-xl bg-[#FFFFFF] px-4 py-3 ring-1 ring-[#E3E0D8] transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none [html[data-motion=off]_&]:transition-none ${i < reached ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}>
+                                <li key={m.name.ko} style={revealDelay(k)} className={`rounded-xl bg-[#FFFFFF] px-4 py-3 ring-1 ring-[#E3E0D8] ${REVEAL_ITEM}`}>
                                   <p className={`${META} font-bold ${INK}`}>{t(m.name)}</p>
                                   {t(m.org) && <p className={`break-keep ${META} ${SOFT}`}>{t(m.org)}</p>}
                                 </li>
                               ))}
-                            </ul>
+                            </RevealList>
                           </div>
-                        </Collapse>
+                        </div>
                       )}
                       {s.matchCta && (
                         <div className="mt-3">

@@ -231,7 +231,7 @@ function registerNoteLines(): Phrase[] {
     // DECIDED 2026-11-02 (사용자, 등록 UX 브리프 D2: "14일에 여는 걸로"): 여는 날을 "11월 둘째 주 끝"에서 11월 14일(토)로. 여는 시각은 보류(opensAt은 비움), 카운트다운은 그대로.
     { ko: "등록은 11월 16일(월)에 엽니다. 여는 시각은 카카오톡 오픈채팅에서 먼저 알립니다.", en: "Registration opens on Monday, 16 November. The time it opens is announced first in the KakaoTalk open chat." },
     // DECIDED 2026-11-06 (사용자: 정체성 한 줄의 "만들 줄 아는 학생들"을 그대로 쓰고 "전공과 코딩 경험은 조건이 아닙니다"는 뺌): 아래 두 줄도 같음.
-    { ko: "등록은 혼자, 팀은 Day 1에 맺습니다.", en: "Register alone; teams form on Day 1." },
+    { ko: "한 사람씩 등록하고, 팀은 Day 1에 맺어요. 같이 할 사람이 있으면 팀 코드를 똑같이 적어요.", en: "Register one person at a time; teams form on Day 1. To team up, enter the same team code." },
     { ko: `${venueLine.ko} 진행은 한국어입니다.`, en: `${venueLine.en} The programme runs in Korean.` },
   ];
 }
@@ -242,13 +242,13 @@ export const registerNoteShort: Phrase = {
   // DECIDED 2026-11-02 (사용자: "will be open at the end of second week of november"): 여는 때를 11월에서 11월 둘째 주 끝으로 좁힙니다.
   // DECIDED 2026-11-02 (사용자, 등록 UX 브리프 D2: "14일에 여는 걸로"): 여는 날을 "11월 둘째 주 끝"에서 11월 14일(토)로. 여는 시각은 보류(opensAt은 비움), 카운트다운은 그대로.
   // DECIDED 2026-11-06 (사용자: 정체성 한 줄과 어긋나 "전공과 코딩 경험은 조건이 아닙니다"를 뺌).
-  ko: "등록은 11월 16일(월)에 엽니다. 혼자 등록합니다.",
+  ko: "등록은 11월 16일(월)에 열어요. 한 사람씩 등록해요.",
   en: "Registration opens Mon 16 Nov. Register alone.",
 };
 
 // DECIDED 2026-11-02 (브리프 O3): 등록이 열리면 위 줄의 "11월 둘째 주 끝"만 빠지고, 혼자 등록과 조건 없음은 같은 자리에 남습니다.
 export const registerNoteOpen: Phrase = {
-  ko: "혼자 등록합니다.",
+  ko: "한 사람씩 등록해요.",
   en: "Register alone.",
 };
 
@@ -282,7 +282,7 @@ export const register = {
   previewNote: { ko: "적은 내용은 이 기기에만 저장되니, 등록이 열리면 그대로 보내면 돼요.", en: "What you type stays on this device only until you send it, and you can send it as it is when registration opens." },
   optional: { ko: "(선택)", en: "(optional)" },
   selectPlaceholder: { ko: "선택", en: "Select" },
-  submit: { ko: "등록 보내기", en: "Send registration" },
+  submit: { ko: "등록하기", en: "Register" },
   submitting: { ko: "보내는 중", en: "Sending" },
   // DECIDED 2026-11-02 (브리프 O4): 보안 확인 토큰이 오기 전에 보내기를 누르면 이 라벨로 기다렸다가 토큰이 오는 순간 같은 제출을 이어 보냅니다.
   checking: { ko: "보안 확인 중", en: "Checking" },
@@ -337,6 +337,7 @@ export const register = {
     // 2026-10-08 (폼 리뷰 9): 스크립트가 막혔을 때(광고 차단, 네트워크). 그 전에는 안내 없이 기다리게만 했습니다.
     bot_check_load_failed: { ko: "보안 확인을 불러오지 못했습니다. 광고 차단을 끄거나 새로고침해 주세요.", en: "The security check could not load. Turn off your ad blocker or refresh the page." },
     bot_check_unavailable: { ko: "보안 확인 서버에 닿지 못했습니다. 잠시 뒤 다시 보내 주세요.", en: "The security check service could not be reached. Please resend in a moment." },
+    invalid_linkedin: { ko: "링크드인 프로필 주소를 넣어 주세요. 예: linkedin.com/in/이름", en: "Please enter a LinkedIn profile URL. Example: linkedin.com/in/name" },
     team_code_full: { ko: "이 팀 코드는 이미 두 명이 썼어요. 다른 코드로 바꿔 주세요.", en: "Two people already used this team code. Please choose another." },
     generic: { ko: "보내지 못했습니다. 잠시 뒤 다시 시도해 주세요.", en: "Could not send. Please try again in a moment." },
   },
@@ -2315,8 +2316,9 @@ export const naru = {
       // DECIDED 2026-11-08 (사용자): 이 멘토와 강상우 님이 맡는 날을 서로 바꿈. 시간은 둘 다 오후 13:00~16:00 그대로(DB 0021).
       { name: { ko: "조동현 님", en: "Cho Dong-hyun" }, org: { ko: "KAIST AI 대학원, 인클리즈랩", en: "KAIST Graduate School of AI, Inclease Lab" }, role: { ko: "박사과정, Co-founder&CTO", en: "PhD student, Co-founder & CTO" },
         bio: { ko: "네이버클라우드 이미지 생성 모델 연구 인턴", en: "AI research intern on image generation at NAVER Cloud" }, days: [3], confirmed: true },
+      // DECIDED 2026-11-16 (사용자: "day 2 에 있는 최우현 씨를 day 3으로").
       { name: { ko: "최우현 님", en: "Choi Woo-hyun" }, org: { ko: "DanaMed, 수일개발", en: "DanaMed, SOOIL Development" }, role: { ko: "CEO, 의료기기 인허가", en: "CEO, medical device regulatory affairs" },
-        bio: { ko: "인슐린 펌프 인허가(EU MDR)와 AI 업무 자동화", en: "Insulin pump approval (EU MDR) and AI workflow automation" }, days: [2], confirmed: true },
+        bio: { ko: "인슐린 펌프 인허가(EU MDR)와 AI 업무 자동화", en: "Insulin pump approval (EU MDR) and AI workflow automation" }, days: [3], confirmed: true },
       { name: { ko: "강정민 님", en: "Kang Jeong-min" }, org: { ko: "Independent AI Researcher", en: "Independent AI Researcher" }, role: { ko: "NeurIPS 2026 TAE 워크숍 포스터 저자 (AX 인재전쟁 본선, Upstage MABC 결선)", en: "Author of a NeurIPS 2026 TAE workshop poster (AX Talent War finals, Upstage MABC finals)" },
         bio: { ko: "뉴텍의 첫 AI 프로덕션 유닛, 100% AI 뮤직비디오", en: "Built Newtech's first AI production unit, a fully AI-made music video" }, days: [3], confirmed: true },
       { name: { ko: "이민재 님", en: "Lee Min-jae" }, org: { ko: "BIGPIE C&T", en: "BIGPIE C&T" }, role: { ko: "해외영업 총괄", en: "Head of Overseas Sales" },

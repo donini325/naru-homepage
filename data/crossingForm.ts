@@ -153,9 +153,9 @@ export const CROSSING_FORM: Field[] = [
     ] },
   // DECIDED 2026-11-15 (사용자: "같은 코드를 넣는 사람들끼리 같은 팀을 해줄건데, 최대 두명. 코드는 유니크하게"): AI 질문 바로 아래의 팀 코드.
   // 선택이고 answers로 갑니다. 한 코드에 두 명까지라는 규칙은 서버(app/api/crossing/register)가 지킵니다(세 번째는 team_code_full).
-  { key: "team_code", scope: "member", type: "text", required: false, maxLen: 30,
+  { key: "team_code", scope: "member", type: "text", required: false, maxLen: 10,
     label: { ko: "팀 코드", en: "Team code" },
-    help: { ko: "같이 하고 싶은 사람이 있으면 둘이 같은 코드를 적어 주세요. 같은 코드를 적은 사람끼리 한 팀이 돼요. 한 코드에 두 명까지예요. 남과 겹치지 않게 지어 주세요.", en: "Want to team up with someone? Both of you enter the same code and you'll be on one team. Up to two people per code. Make it something no one else would pick." },
+    help: { ko: "같이 하고 싶은 사람이 있으면 둘이 같은 코드를 적어 주세요. 같은 코드끼리 한 팀이 되고, 한 코드에 두 명까지예요. 남과 겹치지 않게 10자 안으로 지어 주세요.", en: "Want to team up with someone? Both of you enter the same code and you'll be on one team. Up to two people per code. Make it something no one else would pick." },
     placeholder: { ko: "예: 지존법사123, 역삼동파이터", en: "e.g. wizard123, yeoksam-fighter" } },
   // DECIDED 2026-11-02 (사용자: "질문의 순서를 다시 생각. 필수가 먼저 와야함"): 필수 질문을 다 묻고 선택을 맨 끝에 둡니다.
   // 링크드인이 학교와 나라 다음, 필수인 전공과 AI 질문 앞에 있었습니다. 고정 열이라 answers와 명단 열 순서는 바뀌지 않습니다.
@@ -170,7 +170,9 @@ export const REGISTRATION_FIELDS = CROSSING_FORM.filter((f) => f.scope === "regi
 /** answers jsonb로 가는 키(고정 열이 아닌 것) */
 export const ANSWER_KEYS = { registration: REGISTRATION_FIELDS.filter((f) => !f.fixed).map((f) => f.key), member: MEMBER_FIELDS.filter((f) => !f.fixed).map((f) => f.key) };
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// DECIDED 2026-11-16 (사용자: "이메일 링크드인 validation"): 도메인 끝이 두 글자 이상인 주소만. 링크드인은 프로필 주소(/in/)만 받습니다.
+const EMAIL_RE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[A-Za-z]{2,}$/;
+const LINKEDIN_RE = /^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|pub)\/[^\s/?#]+\/?([?#]\S*)?$/i;
 
 /** 필드 하나의 값 검증. 문제 없으면 null, 있으면 오류 코드. 서버와 클라이언트가 같이 씁니다. */
 export function validateField(f: Field, raw: unknown): string | null {
@@ -183,6 +185,7 @@ export function validateField(f: Field, raw: unknown): string | null {
   if (!v) return f.required ? "required" : null;
   if (v.length > max) return "too_long";
   if (f.type === "email" && !EMAIL_RE.test(v)) return "invalid_email";
+  if (f.key === "linkedin" && !LINKEDIN_RE.test(v)) return "invalid_linkedin";
   if ((f.type === "select" || f.type === "radio" || f.type === "country") && !(f.options ?? []).some((o) => o.value === v)) return "invalid_option";
   return null;
 }
