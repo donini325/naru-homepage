@@ -259,6 +259,11 @@ export default function CrossingSeoul() {
   const [openSession, setOpenSession] = useState<number | null>(null);
   const [mentorsDay, setMentorsDay] = useState<number | null>(null);
   const progress = useScheduleProgress(stages.length);
+  // DECIDED 2026-11-15 (사용자: "데이 1 데이 2 데이 3 이렇게 내릴 때 멘토 보기가 같이 열리면서 애니메이션"): 노선이 그날을 지나면 멘토 칸이 펼쳐집니다.
+  // 한 번 펼친 칸은 위로 다시 올라가도 접지 않습니다. 읽던 자리 위에서 칸이 접히면 화면이 튀기 때문입니다.
+  const [reached, setReached] = useState(0);
+  useEffect(() => setReached((r) => Math.max(r, progress.passed)), [progress.passed]);
+  const confirmedMentors = d.mentors.filter((m) => m.confirmed);
 
   const name = locale === "en" ? (DECEMBER_EVENT_NAME?.en ?? decemberEventLabel(locale)) : (DECEMBER_EVENT_NAME?.ko ?? decemberEventLabel(locale));
   const note = t(regState === "open" ? C.noteOpen : C.noteShort);
@@ -495,6 +500,25 @@ export default function CrossingSeoul() {
                             <Link href={s.matchCta.href} onClick={() => track("naru_cta", { src: "day1", to: "match" })} className={LINK}>{t(C.matchLabel)}</Link>
                           )}
                         </div>
+                      )}
+                      {mentorsOn && (
+                        <Collapse id={`mentors-${s.dayOffset}`} open={i < reached} className="max-w-[42rem] lg:max-w-none">
+                          <div className="pt-4">
+                            <p className={`${META} font-bold ${INK}`}>{t(d.mentorsListLabel)}</p>
+                            <ul className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                              {confirmedMentors.map((m, k) => (
+                                <li
+                                  key={m.name.ko}
+                                  style={{ transitionDelay: i < reached ? `${150 + k * 70}ms` : "0ms" }}
+                                  className={`rounded-xl bg-[#FFFFFF] px-4 py-3 ring-1 ring-[#E3E0D8] transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none [html[data-motion=off]_&]:transition-none ${i < reached ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}
+                                >
+                                  <p className={`${META} font-bold ${INK}`}>{t(m.name)}</p>
+                                  {t(m.org) && <p className={`break-keep ${META} ${SOFT}`}>{t(m.org)}</p>}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </Collapse>
                       )}
                       {s.voteCta && (
                         <div className="mt-5 max-w-[42rem]">
