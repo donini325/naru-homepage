@@ -337,6 +337,7 @@ export const register = {
     // 2026-10-08 (폼 리뷰 9): 스크립트가 막혔을 때(광고 차단, 네트워크). 그 전에는 안내 없이 기다리게만 했습니다.
     bot_check_load_failed: { ko: "보안 확인을 불러오지 못했습니다. 광고 차단을 끄거나 새로고침해 주세요.", en: "The security check could not load. Turn off your ad blocker or refresh the page." },
     bot_check_unavailable: { ko: "보안 확인 서버에 닿지 못했습니다. 잠시 뒤 다시 보내 주세요.", en: "The security check service could not be reached. Please resend in a moment." },
+    team_code_full: { ko: "이 팀 코드는 이미 두 명이 썼어요. 다른 코드로 바꿔 주세요.", en: "Two people already used this team code. Please choose another." },
     generic: { ko: "보내지 못했습니다. 잠시 뒤 다시 시도해 주세요.", en: "Could not send. Please try again in a moment." },
   },
 } as const;
@@ -2320,8 +2321,9 @@ export const naru = {
         bio: { ko: "뉴텍의 첫 AI 프로덕션 유닛, 100% AI 뮤직비디오", en: "Built Newtech's first AI production unit, a fully AI-made music video" }, days: [3], confirmed: true },
       { name: { ko: "이민재 님", en: "Lee Min-jae" }, org: { ko: "BIGPIE C&T", en: "BIGPIE C&T" }, role: { ko: "해외영업 총괄", en: "Head of Overseas Sales" },
         bio: { ko: "K-뷰티 수출, LG전자 미얀마 마케팅 매니저", en: "K-beauty exports, formerly marketing manager at LG Electronics Myanmar" }, days: [3], confirmed: true },
+      // DECIDED 2026-11-15 (사용자: "유재민 을 데이 2 3 없애고"): Day 2, 3 어느 날에도 오지 않아 목록에서 내렸습니다(confirmed: false, days 비움).
       { name: { ko: "유재민 님", en: "You Jae-min" }, org: { ko: "Kia, Bloom", en: "Kia, Bloom" }, role: { ko: "마케팅 커뮤니케이션 매니저, Bloom Gardener", en: "Marketing Communications Manager, Bloom Gardener" },
-        bio: { ko: "EV9 출시 스타벅스 공동 브랜딩", en: "Led the Starbucks co-branding for the EV9 launch" }, days: [2, 3], confirmed: true },
+        bio: { ko: "EV9 출시 스타벅스 공동 브랜딩", en: "Led the Starbucks co-branding for the EV9 launch" }, days: [], confirmed: false },
       // 2026-11-06 (본인 메시지, 사용자 전달): 회사와 프로덕트 이름은 빼고 "실리콘밸리 게임기업 아시아태평양 프로덕트 담당", "게임 기획자"로. 19일(Day 2)로 조율.
       { name: { ko: "강상우 님", en: "Kang Sang-woo" }, org: { ko: "실리콘밸리 게임기업", en: "A Silicon Valley game company" }, role: { ko: "아시아태평양 프로덕트 담당", en: "APAC product" },
         bio: { ko: "게임 기획자", en: "Game designer" }, days: [2], confirmed: true },
@@ -2922,7 +2924,7 @@ export const naru = {
         // DECIDED 2026-11-05 (docs/day-flow-brief.md 2장, 사용자): 하루의 흐름. 시각은 아직 넣지 않습니다(같은 날 사용자: "아직 정확한 시간은 넣지 말아줘"). 정해지면 time만 채웁니다. 필참 표시 없음(같은 날 사용자: "다 참여해야지").
         flow: [
           { what: { ko: "멘토 찾아가기. 넣은 칸의 시각에 팀이 함께, 생각 1장을 들고", en: "Visiting a mentor: the team goes together at the booked time, with the one page" }, where: { ko: "멘토 계신 곳(오피스, 카페, 온라인)", en: "Where the mentor is (an office, a café, or online)" } },
-          { what: { ko: "PO session. 현업 PO 셋이 각각 무엇을 왜 만들기로 했는지와 멈춘 지점, 그 뒤 대담", en: "PO session: three working POs on what they chose to build, why, and where they stopped, then a conversation" }, where: { ko: "현장", en: "On site" } },
+          { what: { ko: "빌더 세션. 현업 PO 셋이 각각 무엇을 왜 만들기로 했는지와 멈춘 지점, 그 뒤 대담", en: "Builder session: three working POs on what they chose to build, why, and where they stopped, then a conversation" }, where: { ko: "현장", en: "On site" } },
           { what: { ko: "미션 제출. 멘토와 찍은 사진, 고친 1장 PDF", en: "Mission submission: a photo with the mentor and the revised one-page PDF" }, where: { ko: "멘토 시간표 페이지", en: "Timetable page" }, href: "/crossing/team?day=2" },
         ],
         // DECIDED 2026-11-04 (사용자, site-tells 목업, 3장 C1): /crossing Day 카드의 한 줄. 긴 line과 세션, 미션은 /crossing/team과 이 키들에 남습니다.
@@ -2955,8 +2957,9 @@ export const naru = {
         // DECIDED 2026-10-17 (사용자: "여기에 들어갈 수 있는 button은 day 2 and day 3 상자에 있는걸로"): 멘토 시간표와 미션 인증으로 가는 버튼.
         timetableCta: { label: { ko: "멘토 시간표와 미션 제출", en: "Mentor timetable & mission uploads" }, href: "/crossing/team?day=2" },
         // DECIDED 2026-11-05 (사용자, 같은 날 뒤: "lovable 과 PO session 을 다시 바꾸자, lovable workshop 이 1일차에 오도록"): Day 1 Lovable workshop, Day 2 PO session으로 되돌림.
+        // DECIDED 2026-11-15 (사용자: "데이2 의 PO 세션을 빌더 세션으로"): 이름만 바꿨습니다. 설명은 그대로입니다.
         session: {
-          title: { ko: "PO session", en: "PO session" },
+          title: { ko: "빌더 세션", en: "Builder session" },
           body: {
             // DECIDED 2026-10-22 (사용자: "day 2의 문장을 좀 더 줄여줘"): 둘째 문장을 뺐습니다. 그 전: "...풀어 줍니다. 만드는 일은 AI가 빨라졌어도 무엇을 만들지는 사람이 고릅니다."
             // DECIDED 2026-10-26 (사용자: "각 세션에 대한 설명의 length는 동일해야함"): 세 세션 설명을 같은 길이로. "3시간 동안"을 뺐습니다.
@@ -2978,7 +2981,7 @@ export const naru = {
         // DECIDED 2026-10-17 (사용자, 스크린숏 표): Day 2와 Day 3의 미션 인정 조건이 정해졌습니다. "이후 공개"를 이것으로 바꿉니다.
         // 조건 셋(과반 현장, 멘토 찾아가기, 진척 PDF). 2026-10-26: 멘토 찾아가기는 Day 2, 3 날마다 팀이 함께(10/17의 하루 이상 완화를 되돌림). 확인은 현장 체크, 멘토와 찍은 사진(찾아간 날), PDF입니다.
         // DECIDED 2026-11-08 (docs/mission-card-brief.md S1, missions-brief): 조건에 PO session이 들어와 제목에도. 그 전 "멘토 찾아가기와 진척 공유" / "Visit a mentor, share progress".
-        milestone: { ko: "멘토 만나기, PO session, 고친 1장 올리기", en: "Meet a mentor, sit in the PO session, upload your revised page" },
+        milestone: { ko: "멘토 만나기, 빌더 세션, 고친 1장 올리기", en: "Meet a mentor, sit in the Builder session, upload your revised page" },
         // DECIDED 2026-10-17 (사용자, 스크린숏: "문장으로 말고, bullet point로, 그리고 제출하는 방법으로"): 설명은 문단이 아니라
         // 인정 조건과 제출 방법 두 목록입니다. 그 전: "세 가지를 모두 채우면 인정됩니다. ..." 한 문단.
         milestoneDetail: {
@@ -2991,7 +2994,7 @@ export const naru = {
             // DECIDED 2026-11-08 (docs/mission-card-brief.md S3, missions-brief): 조건은 넷. 멘토는 한 분 이상을 과반이 함께, 그날 세션(PO session)에 함께 있기.
             // 그 전 둘째 줄 "팀원 과반이 멘토를 찾아가 사진 한 장", 넷째 줄 "1장을 반박에 맞춰 고쳐 공유하기".
             { ko: "멘토 한 분 이상을 과반이 함께 찾아가기", en: "Visit at least one mentor, more than half of you together" },
-            { ko: "PO session에 함께 있기", en: "Be at the PO session together" },
+            { ko: "빌더 세션에 함께 있기", en: "Be at the Builder session together" },
             // DECIDED 2026-10-26 (사용자): 진척 PDF는 새 문서가 아니라 1장을 멘토의 피드백과 그날의 진척에 맞춰 고친 것.
             // DECIDED 2026-10-31 (사용자, 스크린숏: "상자의 길이가 다름. day 1 이랑 day 2 and 3 가 다름"): 인정 조건을 1440 칸에서 한 줄씩으로. Day 1(할 것 셋 + 세션 두 줄)과 같은 다섯 줄. 그 전: 1장을 피드백과 진척에 맞춰 고쳐 공유하기(진척은 띠 제목이 말함)
             // DECIDED 2026-11-06 (docs/write-first-brief.md W6): "피드백"을 사이트의 말 "반박"으로. 그 전 문장은 git 93a69c2.

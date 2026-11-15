@@ -58,14 +58,14 @@ export const copy = {
 
   milestone: {
     // DECIDED 2026-11-08 (docs/mission-card-brief.md S1, S2).
-    2: ko("멘토 만나고, PO session 듣고, 고친 한 장 올리기", stage(2).milestone!),
+    2: ko("멘토 만나고, 빌더 세션 듣고, 고친 한 장 올리기", stage(2).milestone!),
     3: ko("멘토 만나고, Open tables에서 나누고, 발표 자료 올리기", stage(3).milestone!),
   } as Record<number, Phrase>,
   milestoneConditionsLabel: ko("이걸 다 하면 돼요", d.milestoneConditionsLabel),
   milestoneSubmitLabel: ko("올리는 것", d.milestoneSubmitLabel),
   // DECIDED 2026-11-08 (docs/mission-card-brief.md S3, S4): 조건 넷. kos는 길이가 같을 때만 덮어쓰므로 data/naru.ts의 conditions도 넷입니다.
   conditions: {
-    2: kos(["팀원 절반 넘게 현장에 오기", "멘토 한 분 이상을 절반 넘게 같이 찾아가기", "PO session에 같이 있기", "반박 들은 대로 한 장을 고쳐서 올리기"], stage(2).milestoneDetail!.conditions),
+    2: kos(["팀원 절반 넘게 현장에 오기", "멘토 한 분 이상을 절반 넘게 같이 찾아가기", "빌더 세션에 같이 있기", "반박 들은 대로 한 장을 고쳐서 올리기"], stage(2).milestoneDetail!.conditions),
     3: kos(["팀원 절반 넘게 Zoom에 들어오기", "멘토 한 분 이상을 절반 넘게 같이 찾아가기", "Open tables에서 어디까지 왔는지 나누기", "발표 자료 올리기"], stage(3).milestoneDetail!.conditions),
   } as Record<number, Phrase[]>,
   // S5~S7: 확인 칩 셋과 카드 아래 두 줄. "시간표 페이지"는 CrossingSeoul이 링크로 그립니다.
@@ -135,7 +135,7 @@ export const copy = {
     2: kos(
       [
         "멘토 찾아가기. 잡아 둔 시간에 팀이 같이, 한 장을 들고",
-        "PO session. 현업 PO 세 명이 뭘 왜 만들기로 했고 어디서 멈췄는지 들려주고, 이어서 대담",
+        "빌더 세션. 현업 PO 세 명이 뭘 왜 만들기로 했고 어디서 멈췄는지 들려주고, 이어서 대담",
         "미션 올리기. 멘토랑 찍은 사진, 고친 한 장 PDF",
       ],
       (stage(2).flow ?? []).map((r) => r.what),

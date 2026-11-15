@@ -164,6 +164,15 @@ export async function POST(req: Request) {
     answers: memberAnswers,
   };
 
+  // DECIDED 2026-11-15 (사용자): 같은 팀 코드를 적은 사람끼리 한 팀, 한 코드에 두 명까지. 이미 둘이면 409.
+  const teamCode = typeof memberAnswers.team_code === "string" ? memberAnswers.team_code.trim() : "";
+  if (teamCode) {
+    memberAnswers.team_code = teamCode;
+    const { count, error: codeErr } = await supabase.from(MEMBERS).select("id", { count: "exact", head: true }).eq("event_slug", CURRENT_EVENT).eq("answers->>team_code", teamCode);
+    if (codeErr) console.error(`[crossing/register] team code count failed: ${codeErr.code ?? ""} ${codeErr.message ?? ""}`);
+    else if ((count ?? 0) >= 2) return NextResponse.json({ error: "team_code_full", field: "team_code" }, { status: 409 });
+  }
+
   const submittedAt = typeof body.submittedAt === "string" && !Number.isNaN(Date.parse(body.submittedAt)) ? body.submittedAt : null;
 
   // ── 삽입 ─────────────────────────────────────────────────────────────────

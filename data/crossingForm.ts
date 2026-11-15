@@ -151,6 +151,12 @@ export const CROSSING_FORM: Field[] = [
       { value: "connect", label: { ko: "AI에 다른 도구를 연결해 써 봤다", en: "Connected other tools to AI so it can use them" },
         hint: { ko: "MCP로 Claude나 ChatGPT에 노션, 깃허브, 캘린더 등을 연결", en: "Notion, GitHub or a calendar linked to Claude or ChatGPT through MCP" } },
     ] },
+  // DECIDED 2026-11-15 (사용자: "같은 코드를 넣는 사람들끼리 같은 팀을 해줄건데, 최대 두명. 코드는 유니크하게"): AI 질문 바로 아래의 팀 코드.
+  // 선택이고 answers로 갑니다. 한 코드에 두 명까지라는 규칙은 서버(app/api/crossing/register)가 지킵니다(세 번째는 team_code_full).
+  { key: "team_code", scope: "member", type: "text", required: false, maxLen: 30,
+    label: { ko: "팀 코드", en: "Team code" },
+    help: { ko: "같이 하고 싶은 사람이 있으면 둘이 같은 코드를 적어 주세요. 같은 코드를 적은 사람끼리 한 팀이 돼요. 한 코드에 두 명까지예요. 남과 겹치지 않게 지어 주세요.", en: "Want to team up with someone? Both of you enter the same code and you'll be on one team. Up to two people per code. Make it something no one else would pick." },
+    placeholder: { ko: "예: 지존법사123, 역삼동파이터", en: "e.g. wizard123, yeoksam-fighter" } },
   // DECIDED 2026-11-02 (사용자: "질문의 순서를 다시 생각. 필수가 먼저 와야함"): 필수 질문을 다 묻고 선택을 맨 끝에 둡니다.
   // 링크드인이 학교와 나라 다음, 필수인 전공과 AI 질문 앞에 있었습니다. 고정 열이라 answers와 명단 열 순서는 바뀌지 않습니다.
   // 폼에 그리는 순서는 이 배열의 순서이고, 동의 칸은 RegisterModal이 언제나 맨 끝에 그립니다.

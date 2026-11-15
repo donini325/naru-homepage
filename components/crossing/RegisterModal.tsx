@@ -384,7 +384,7 @@ export default function RegisterModal({ open, onClose, onRegistered, refSource, 
                 완료 화면에서는 제목이 본문 안에 있어 이 줄에는 닫기 버튼만 남습니다. */}
             <div className="flex shrink-0 items-center justify-between gap-3 px-[27px] pb-[13.5px] pt-[18px] sm:px-[40.5px] sm:pt-[27px]">
               {status === "success" ? <span /> : (
-                <h3 id="crossing-register-title" className={`break-keep ${LARGE} font-bold leading-tight text-white`}>{t(preview && !closed ? copy.previewTitle : copy.title)}</h3>
+                <h3 id="crossing-register-title" className="break-keep text-[1.5rem] font-bold leading-tight text-white sm:text-[1.75rem]">{t(preview && !closed ? copy.previewTitle : copy.title)}</h3>
               )}
               <button ref={closeRef} type="button" onClick={onClose} aria-label={t(copy.close)} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-naru-surface text-white/85 transition hover:border-white/45 hover:text-white active:scale-95">
                 <svg aria-hidden width="16" height="16" viewBox="0 0 15 15" fill="none"><path d="M1 1l13 13M14 1L1 14" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
@@ -428,8 +428,7 @@ export default function RegisterModal({ open, onClose, onRegistered, refSource, 
                       미리 보기 안내 상자(registerNote 세 줄 + previewKeep)를 뺐습니다. 언제 여는지와 혼자 등록한다는 말은 히어로 한 줄이
                       하고, 꺼진 버튼의 라벨이 11월을 말합니다. 마감 안내만 남깁니다. */}
                   {/* DECIDED 2026-11-02 (브리프 R1, D1 둠): 미리 보기에서도 적은 내용이 이 기기에 남으므로 같은 한 줄 자리에 previewNote. 마감 뒤에는 없음. */}
-                  {!preview ? <p className={`${META} leading-relaxed text-naru-muted`}>{t(copy.draftNote)}</p>
-                    : !closed && <p id="crossing-register-preview-note" className={`${META} leading-relaxed text-naru-muted`}>{t(copy.previewNote)}</p>}
+                  {/* DECIDED 2026-11-15 (사용자: "적은 내용은 보내기 전까지 이 기기에만 저장돼요. 없애고"): 위 한 줄(draftNote, previewNote)을 뺐습니다. 저장은 그대로 됩니다. */}
                   {closed && (
                     <p id="crossing-register-preview" role="note" className={`mt-4 card-tint rounded-xl p-[16px] ${META} leading-relaxed text-white sm:p-[18px]`}>{t(copy.closed)}</p>
                   )}
