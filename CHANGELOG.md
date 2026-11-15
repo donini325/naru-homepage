@@ -8,6 +8,7 @@
 
 ### 2026-11
 
+- [2026-11-16 펼침 대신 제자리 나타남, 검증](#2026-11-16-reveal-validate)
 - [2026-11-15 하루 일정을 날짜 칸으로](#2026-11-15-flow-left)
 - [2026-11-15 하루 일정 펼침, 팀 코드](#2026-11-15-flow-teamcode)
 - [2026-11-15 멘토 칸 펼침, 등록 지금 엶](#2026-11-15-mentors-open)
@@ -556,6 +557,12 @@
 - [2026-06-15 Design-revamp polish cycle](#changelog-june-15-2026)
 
 ---
+
+<a id="2026-11-16-reveal-validate"></a>
+## 2026-11-16 펼침 대신 제자리 나타남, 검증
+- 범위: components/crossing/redesign/CrossingSeoul.tsx, data/naru.ts, data/crossingForm.ts, components/crossing/redesign/copy.ts
+- 한 것: 사용자 요청("뭔가 이상해"). 하루 일정과 멘토가 노선을 따라 펼쳐지던 것(높이가 바뀌어 아래가 밀리고 점과 선이 흔들림)을, 처음부터 자리를 잡고 화면에 들어올 때 줄만 차례로 떠오르게(RevealList, IntersectionObserver, opacity와 transform만). 최우현 님 Day 2 → Day 3. 이메일은 도메인 끝 두 글자 이상, 링크드인은 linkedin.com/in/ 프로필 주소만(invalid_linkedin), 팀 코드 10자. 보내기 버튼 "등록 보내기" → "등록하기". "팀 없이 혼자 등록하면 돼요" 등 혼자 등록 문구를 팀 코드에 맞게
+- 검증: tsc 통과, 로컬 세 페이지 200, 정규식 표본 확인. 화면으로는 확인하지 못함
 
 <a id="2026-11-15-flow-left"></a>
 ## 2026-11-15 하루 일정을 날짜 칸으로
