@@ -166,9 +166,10 @@ const revealDelay = (k: number) => ({ transitionDelay: `${60 + k * 80}ms` });
 
 /**
  * DECIDED 2026-11-17 (사용자: "배경 하얀거 다 없애. 스크롤 다운 하면서 펼쳐지는 느낌"): 그날 카드는 흰 상자 없이 위아래 선만 두고,
- * 화면에 들어오면 칸이 위에서부터 차례로 펼쳐집니다(clip-path가 위에서 아래로 열리고 살짝 내려앉음). 칸의 높이는 처음부터 그대로라 아래가 밀리지 않습니다.
+ * 화면 아래쪽 4분의 1을 넘어 들어오면 윗선이 왼쪽에서 그어지고, 칸이 위에서부터 차례로 펼쳐집니다(clip-path가 위에서 아래로 열리며 16px 내려앉음, 0.9초, 칸마다 0.22초 간격).
+ * 2026-11-17 같은 날(사용자: "펼쳐지는 느낌을 주게"): 처음 값(0.7초, 4px, 0.14초 간격, 10% 지점)이 너무 약해 키웠습니다. 칸의 높이는 처음부터 그대로라 아래가 밀리지 않습니다.
  */
-const UNFOLD = "transition-[opacity,clip-path,transform] duration-700 ease-out opacity-0 -translate-y-1 [clip-path:inset(0_0_100%_0)] group-data-[shown=true]:translate-y-0 group-data-[shown=true]:opacity-100 group-data-[shown=true]:[clip-path:inset(0_0_0_0)] motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:[clip-path:none] motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:[clip-path:none] [html[data-motion=off]_&]:transition-none";
+const UNFOLD = "transition-[opacity,clip-path,transform] duration-[900ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] opacity-0 -translate-y-4 [clip-path:inset(0_0_100%_0)] group-data-[shown=true]:translate-y-0 group-data-[shown=true]:opacity-100 group-data-[shown=true]:[clip-path:inset(0_0_0_0)] motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:[clip-path:none] motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:[clip-path:none] [html[data-motion=off]_&]:transition-none";
 
 function useShown<T extends Element>() {
   const ref = useRef<T>(null);
@@ -176,7 +177,7 @@ function useShown<T extends Element>() {
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof IntersectionObserver === "undefined") { setShown(true); return; }
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setShown(true); io.disconnect(); } }, { rootMargin: "0px 0px -10% 0px" });
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setShown(true); io.disconnect(); } }, { rootMargin: "0px 0px -22% 0px" });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -189,7 +190,7 @@ function DayCard({ children }: { children: ReactNode }) {
     <dl
       ref={ref}
       data-shown={shown}
-      className={`group mt-5 max-w-[42rem] border-y ${RULE} lg:max-w-none [&>*:nth-child(2)]:[transition-delay:140ms] [&>*:nth-child(3)]:[transition-delay:280ms] [&>*:nth-child(4)]:[transition-delay:420ms]`}
+      className={`group relative mt-5 max-w-[42rem] border-b ${RULE} lg:max-w-none before:absolute before:inset-x-0 before:top-0 before:h-px before:origin-left before:scale-x-0 before:bg-[#E3E0D8] before:transition-transform before:duration-700 before:ease-out data-[shown=true]:before:scale-x-100 motion-reduce:before:scale-x-100 [html[data-motion=off]_&]:before:scale-x-100 [&>*:nth-child(2)]:[transition-delay:220ms] [&>*:nth-child(3)]:[transition-delay:440ms] [&>*:nth-child(4)]:[transition-delay:660ms]`}
     >
       {children}
     </dl>
@@ -310,7 +311,7 @@ export default function CrossingSeoul() {
   const progress = useScheduleProgress(stages.length);
   // DECIDED 2026-11-16 (사용자: "데이 2 는 허수진, 식품 기업, 김규리, 강상우, 데이 3은 최우현 강정민 조동현 이민재. 4개가 한 줄에"): 날마다 그날 멘토만, 이 순서로.
   const MENTOR_ORDER: Record<number, string[]> = {
-    2: ["허수진 님", "식품 기업 기획파트장", "김규리 님", "강상우 님"],
+    2: ["허수진 님", "김규리 님", "강상우 님", "식품 기업 기획파트장"],
     3: ["최우현 님", "강정민 님", "조동현 님", "이민재 님"],
   };
   const mentorsFor = (day: number) =>
