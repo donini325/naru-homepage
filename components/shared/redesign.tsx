@@ -27,3 +27,11 @@ export function Lines({ text }: { text: string }) {
     </>
   );
 }
+
+/** 날짜 범위를 점으로 잇는 한 꼴. "2026-12-17", "2026-12-21" → "2026.12.17–12.21"(2026-11-17 사용자: 숫자 포맷 통일). */
+export function dotRange(start: string, end: string | null) {
+  const [y, m, d] = start.split("-");
+  if (!end) return `${y}.${m}.${d}`;
+  const [, m2, d2] = end.split("-");
+  return `${y}.${m}.${d}–${m2}.${d2}`;
+}

@@ -21,8 +21,8 @@ export const copy = {
   photosCaption: ko("8월 싱가포르, 제로백 빌더톤", h.photosCaption),
   photosMore: (n: number): Phrase => ({ ko: `사진 ${n}장 더 보기`, en: `View ${n} photos` }),
 
-  noteShort: ko("등록 시작은 11월 16일(월).\n한 사람씩 등록하고, 같이 할 사람과는 팀 코드를 맞춰요.", registerNoteShort),
-  noteOpen: ko("한 사람씩 등록하고, 같이 할 사람과는 팀 코드를 맞춰요.", registerNoteOpen),
+  noteShort: ko("등록 시작은 11.16 월요일.\n등록은 각자 해요. 같이 하고 싶은 사람이 있으면 팀 코드를 똑같이 적어 주세요.", registerNoteShort),
+  noteOpen: ko("등록은 각자 해요. 같이 하고 싶은 사람이 있으면 팀 코드를 똑같이 적어 주세요.", registerNoteOpen),
   previewCta: ko("등록 폼 먼저 보기", registerCopy.previewCta),
 
   programHeading: ko("닷새, 이렇게 보내요", d.programHeading),

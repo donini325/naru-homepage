@@ -150,7 +150,7 @@ export default function AugustRecord() {
               <li key={d.day} className={`relative grid gap-x-8 border-b ${RULE} py-4 pl-8 sm:grid-cols-[9rem_minmax(0,1fr)] lg:grid-cols-[11rem_minmax(0,1fr)]`}>
                 <span aria-hidden className={`absolute left-0 top-[24px] z-10 block h-3 w-3 rounded-full ${d.day === 8 ? "bg-naru-orange" : "border-[1.5px] border-naru-navy bg-[#FCFBF8]"}`} />
                 <p className={`${BODY} font-bold tabular-nums ${NAVY}`}>
-                  Day {d.day} <span className={`ml-2 font-semibold ${SOFT}`}>{d.date.replace(".", "/")} {t(d.weekday)}</span>
+                  Day {d.day} <span className={`ml-2 font-semibold ${SOFT}`}>{d.date} {t(d.weekday)}</span>
                 </p>
                 <p className={`break-keep ${BODY} ${INK}`}>{t(C.dayThemes[d.day])}</p>
               </li>

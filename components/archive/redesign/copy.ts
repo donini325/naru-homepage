@@ -7,7 +7,7 @@ import { type Phrase } from "@/data/dictionaryCore";
 // 한국어의 \n은 데스크톱에서 줄을 나누는 자리입니다(Lines).
 
 export const copy = {
-  dateLine: { ko: "2026년 8월 22일부터 29일까지, 싱가포르", en: "22 to 29 August 2026, Singapore" } as Phrase,
+  dateLine: { ko: "2026.08.22–08.29, 싱가포르", en: "2026.08.22–08.29, Singapore" } as Phrase,
   title: { ko: "제로백 빌더톤", en: "Zero100 Builderthon" } as Phrase,
   lead: {
     ko: "나루는 이 8일에서 시작했어요.\n스크리닝 없이 들어온 학생들이 실제 회사의 문제를 받아 풀고 마지막 날 그 회사 앞에서 발표했어요.",

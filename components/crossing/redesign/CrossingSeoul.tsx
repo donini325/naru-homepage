@@ -14,7 +14,8 @@ import {
   decemberPartners,
   decemberProblemSetters,
 } from "@/data/naru";
-import { DECEMBER_EVENT_NAME, decemberEventLabel, formatDecemberDateLine, formatDecemberDayWithWeekday } from "@/lib/naruDates";
+import { DECEMBER_EVENT_NAME, DECEMBER_STARTS_AT, DECEMBER_ENDS_AT, DECEMBER_CITY, decemberEventLabel, formatDecemberDayWithWeekday } from "@/lib/naruDates";
+import { dotRange } from "@/components/shared/redesign";
 import { TIMETABLE_OPEN } from "@/lib/crossingOps";
 import { VOTE_BUTTON_OPEN } from "@/lib/crossingVote";
 import { useCrossingRegisterOptional } from "@/components/crossing/RegisterProvider";
@@ -149,8 +150,9 @@ function ToggleTitle({ id, open, onToggle, title, lang }: { id: string; open: bo
 
 /** 그날 카드의 한 칸. 왼쪽 좁은 칸에 이름(세션, 미션, 멘토), 오른쪽에 내용. 칸 이름은 모두 같은 크기와 색입니다. */
 function DayRow({ label, first, children }: { label: string; first?: boolean; children: ReactNode }) {
+  const { ref, shown } = useShown<HTMLDivElement>();
   return (
-    <div className={`grid gap-1.5 py-4 sm:grid-cols-[5rem_minmax(0,1fr)] sm:gap-5 ${UNFOLD} ${first ? "" : `border-t ${RULE}`}`}>
+    <div ref={ref} data-shown={shown} className={`group grid gap-1.5 py-4 sm:grid-cols-[5rem_minmax(0,1fr)] sm:gap-5 ${UNFOLD} ${first ? "" : `border-t ${RULE}`}`}>
       <dt className={`${META} font-semibold text-caption sm:pt-[3px]`}>{label}</dt>
       <dd className="min-w-0">{children}</dd>
     </div>
@@ -167,9 +169,10 @@ const revealDelay = (k: number) => ({ transitionDelay: `${60 + k * 80}ms` });
 /**
  * DECIDED 2026-11-17 (사용자: "배경 하얀거 다 없애. 스크롤 다운 하면서 펼쳐지는 느낌"): 그날 카드는 흰 상자 없이 위아래 선만 두고,
  * 화면 아래쪽 4분의 1을 넘어 들어오면 윗선이 왼쪽에서 그어지고, 칸이 위에서부터 차례로 펼쳐집니다(clip-path가 위에서 아래로 열리며 16px 내려앉음, 0.9초, 칸마다 0.22초 간격).
+ * 2026-11-17 같은 날 뒤(사용자: "day 1 에 펼쳐지는 느낌이 전혀 없어"): 카드 하나가 한 번에 열리면 긴 날(Day 1)은 위 칸이 열릴 때 아래 칸이 화면 밖이라 펼침이 안 보였습니다. 이제 칸마다 제 자리에 닿을 때 열립니다.
  * 2026-11-17 같은 날(사용자: "펼쳐지는 느낌을 주게"): 처음 값(0.7초, 4px, 0.14초 간격, 10% 지점)이 너무 약해 키웠습니다. 칸의 높이는 처음부터 그대로라 아래가 밀리지 않습니다.
  */
-const UNFOLD = "transition-[opacity,clip-path,transform] duration-[900ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] opacity-0 -translate-y-4 [clip-path:inset(0_0_100%_0)] group-data-[shown=true]:translate-y-0 group-data-[shown=true]:opacity-100 group-data-[shown=true]:[clip-path:inset(0_0_0_0)] motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:[clip-path:none] motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:[clip-path:none] [html[data-motion=off]_&]:transition-none";
+const UNFOLD = "transition-[opacity,clip-path,transform] duration-[900ms] ease-[cubic-bezier(0.2,0.7,0.2,1)] opacity-0 -translate-y-4 [clip-path:inset(0_0_100%_0)] data-[shown=true]:translate-y-0 data-[shown=true]:opacity-100 data-[shown=true]:[clip-path:inset(0_0_0_0)] motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:[clip-path:none] motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:[clip-path:none] [html[data-motion=off]_&]:transition-none";
 
 function useShown<T extends Element>() {
   const ref = useRef<T>(null);
@@ -190,7 +193,7 @@ function DayCard({ children }: { children: ReactNode }) {
     <dl
       ref={ref}
       data-shown={shown}
-      className={`group relative mt-5 max-w-[42rem] border-b ${RULE} lg:max-w-none before:absolute before:inset-x-0 before:top-0 before:h-px before:origin-left before:scale-x-0 before:bg-[#E3E0D8] before:transition-transform before:duration-700 before:ease-out data-[shown=true]:before:scale-x-100 motion-reduce:before:scale-x-100 [html[data-motion=off]_&]:before:scale-x-100 [&>*:nth-child(2)]:[transition-delay:220ms] [&>*:nth-child(3)]:[transition-delay:440ms] [&>*:nth-child(4)]:[transition-delay:660ms]`}
+      className={`relative mt-5 max-w-[42rem] border-b ${RULE} lg:max-w-none before:absolute before:inset-x-0 before:top-0 before:h-px before:origin-left before:scale-x-0 before:bg-[#E3E0D8] before:transition-transform before:duration-700 before:ease-out data-[shown=true]:before:scale-x-100 motion-reduce:before:scale-x-100 [html[data-motion=off]_&]:before:scale-x-100`}
     >
       {children}
     </dl>
@@ -362,7 +365,8 @@ export default function CrossingSeoul() {
         {/* ── 히어로 ─────────────────────────────────────────────── */}
         <section id="top" aria-labelledby="hero-title" className="pt-[calc(var(--site-header-height,96px)+28px)] lg:pt-[calc(var(--site-header-height,96px)+40px)]">
           <div className={FRAME}>
-            <p className={`${HEADING} tabular-nums ${INK}`}>{formatDecemberDateLine(locale)}</p>
+            {/* DECIDED 2026-11-17 (사용자: "숫자 포맷 다 똑같이 해. 붙여"): 날짜는 사이트 전체에서 점으로 잇는 한 꼴(2026.12.17–12.21). 아래 Day 칸(12.17 목)과 기사 날짜와 같습니다. */}
+            <p className={`${HEADING} tabular-nums ${INK}`}>{dotRange(DECEMBER_STARTS_AT, DECEMBER_ENDS_AT)}, {DECEMBER_CITY[locale === "en" ? "en" : "ko"]}</p>
             <h1 id="hero-title" lang={locale} className={`mt-2 break-keep ${DISPLAY} ${NAVY}`}>
               {name}<span aria-hidden className="text-naru-orange">.</span>
             </h1>
@@ -380,8 +384,9 @@ export default function CrossingSeoul() {
                 {regState !== "closed" && <p id="hero-register-note" className={`mt-3 break-keep ${META} ${SOFT}`}>{note}</p>}
               </div>
 
+              {/* DECIDED 2026-11-17 (사용자: "사진 위치를 조금 더 위로"): 데스크톱에서 64px 올려 제목 줄 옆까지 끌어올립니다. */}
               {photos.length > 0 && (
-                <figure className="lg:col-span-6">
+                <figure className="lg:col-span-6 lg:-mt-16">
                   <button
                     type="button"
                     aria-haspopup="dialog"
