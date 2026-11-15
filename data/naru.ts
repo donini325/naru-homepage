@@ -3697,7 +3697,8 @@ export const decemberPartners: { heading: Phrase; groups: { label: Phrase; lead?
   heading: { ko: "함께하는 곳", en: "With us in December" },
   groups: [
     {
-      label: { ko: "메인 후원", en: "Main sponsors" },
+      // DECIDED 2026-11-16 (사용자: "메인 후원 말고 8월부터 함께한 곳"): 묶음 이름만 바꿈.
+      label: { ko: "8월부터 함께한 곳", en: "With us since August" },
       lead: { name: "AXMOS", src: "/partners/logos/white/trimmed/axmos.png", w: 900, h: 240, url: "https://axmos.ai/kr", note: { ko: "컨소시엄 코어 5개사", en: "Consortium, five core members" } },
       logos: [
         // DECIDED 2026-10-22 (사용자: "translink, wilt, codepresso, popup, 드림에이스 순서임").
