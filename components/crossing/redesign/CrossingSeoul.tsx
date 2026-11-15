@@ -17,6 +17,7 @@ import { DECEMBER_EVENT_NAME, decemberEventLabel, formatDecemberDateLine, format
 import { TIMETABLE_OPEN } from "@/lib/crossingOps";
 import { VOTE_BUTTON_OPEN } from "@/lib/crossingVote";
 import { useCrossingRegisterOptional } from "@/components/crossing/RegisterProvider";
+import DayFlowModal from "@/components/crossing/DayFlowModal";
 import PhotoLightbox, { warmPhoto } from "@/components/shared/PhotoLightbox";
 import MobileChatBar from "@/components/shared/MobileChatBar";
 import MediaList from "@/components/shared/MediaList";
@@ -85,27 +86,6 @@ function useScheduleProgress(count: number) {
     };
   }, [count]);
   return { listRef, fillRef, stopRefs, passed };
-}
-
-/**
- * DECIDED 2026-11-16 (사용자: "뭔가 이상해. 애니메이션 다 고치고"): 하루 일정과 멘토는 처음부터 자리를 차지하고, 화면에 들어올 때 줄만 차례로 떠오릅니다.
- * 그 전(11-15)에는 노선이 지나야 칸이 펼쳐져서, 읽는 도중 아래 내용이 밀려 내려가고 점과 선의 위치도 같이 흔들렸습니다. 이제 높이는 바뀌지 않고 opacity와 transform만 움직입니다.
- * 한 번 보이면 다시 숨지 않습니다. 동작 줄이기(OS)와 html[data-motion=off]면 처음부터 보입니다.
- */
-const REVEAL_ITEM = "transition-[opacity,transform] duration-500 ease-out opacity-0 translate-y-2 group-data-[shown=true]:translate-y-0 group-data-[shown=true]:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none [html[data-motion=off]_&]:translate-y-0 [html[data-motion=off]_&]:opacity-100 [html[data-motion=off]_&]:transition-none";
-const revealDelay = (k: number) => ({ transitionDelay: `${80 + k * 70}ms` });
-
-function RevealList({ as: Tag, className = "", children }: { as: "ol" | "ul"; className?: string; children: ReactNode }) {
-  const ref = useRef<HTMLOListElement & HTMLUListElement>(null);
-  const [shown, setShown] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || typeof IntersectionObserver === "undefined") { setShown(true); return; }
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setShown(true); io.disconnect(); } }, { rootMargin: "0px 0px -12% 0px" });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  return <Tag ref={ref} data-shown={shown} className={`group ${className}`}>{children}</Tag>;
 }
 
 /**
@@ -274,8 +254,10 @@ export default function CrossingSeoul() {
   const photos = hero.photos.filter((p) => !!p.src).slice(0, 4);
 
   const [photoOpen, setPhotoOpen] = useState<number | null>(null);
+  const [flowDay, setFlowDay] = useState<number | null>(null);
   // 2026-11-09: 설명이 펼쳐진 세션(그날의 dayOffset). 한 번에 하나.
   const [openSession, setOpenSession] = useState<number | null>(null);
+  const [mentorsDay, setMentorsDay] = useState<number | null>(null);
   const progress = useScheduleProgress(stages.length);
 
   const name = locale === "en" ? (DECEMBER_EVENT_NAME?.en ?? decemberEventLabel(locale)) : (DECEMBER_EVENT_NAME?.ko ?? decemberEventLabel(locale));
@@ -405,8 +387,7 @@ export default function CrossingSeoul() {
               <span aria-hidden className="absolute bottom-10 left-[5px] top-10 w-px bg-naru-navy/25 lg:left-[calc(11rem+5px)]" />
               <span ref={progress.fillRef} aria-hidden style={{ transform: "scaleY(0)" }} className="absolute bottom-10 left-[5px] top-10 w-px origin-top bg-naru-navy will-change-transform lg:left-[calc(11rem+5px)]" />
               {stages.map((s, i) => {
-                const dayMentors = d.mentors.filter((m) => m.confirmed && (!m.days || m.days.includes(s.dayOffset)));
-                const mentorsOn = !!s.mentorsCta && dayMentors.length > 0;
+                const mentorsOn = s.mentorsCta && d.mentors.some((m) => m.confirmed);
                 // DECIDED 2026-11-08 (docs/mission-card-brief.md D1): 미션은 접는 띠 대신 펼친 카드. Day 1 "들고 갈 것" 띠는 그대로 Disclosure.
                 const strip = s.milestone ? (
                   <MissionCard
@@ -463,6 +444,7 @@ export default function CrossingSeoul() {
                     </div>
                     <div className="mt-3 min-w-0 lg:mt-0 lg:pl-10">
                       <h3 className={`break-keep ${HEADING} ${INK}`}>{t(s.title)}</h3>
+                      <p className={`mt-2 max-w-[42rem] break-keep ${BODY} ${SOFT} lg:max-w-none`}><Lines text={t(C.line[s.dayOffset] ?? s.line)} /></p>
                       {(s.session || s.chips.length > 0) && (
                         <p className={`mt-4 flex flex-wrap gap-x-5 gap-y-1 ${META} text-caption`}>
                           {/* DECIDED 2026-11-09 (사용자, 스크린숏: "각 세션 클릭하면 세션 설명이 나오게"): 세션 이름이 버튼이고, 누르면 아래에 설명이 펼쳐집니다. */}
@@ -501,59 +483,17 @@ export default function CrossingSeoul() {
                         </Collapse>
                       ) : null}
                       {strip && <div className="mt-5 max-w-[42rem] lg:max-w-none">{strip}</div>}
-                      {/* DECIDED 2026-11-15 (사용자: "하루 일정 보기에 있는 내용들은 Day 밑에 자동으로 비슷하게 나오게, 애니메이션으로", "멘토 보기를 없애줘"):
-                          하루 일정과 그날의 멘토를 버튼 뒤 창 대신 그날 칸 안에 그립니다. 노선이 그날을 지나면 펼쳐지고 줄이 차례로 떠오릅니다(한 번 펼치면 접지 않음). */}
-                      {/* DECIDED 2026-11-16 (사용자: "그냥 오른쪽에 다시 두고", "이 시간표에 디자인을 좀 깔쌈하게"): 하루 일정은 본문 칸의 흰 카드.
-                          줄마다 순서 번호, 앞 구절(무엇)은 굵게, 뒤 설명은 옅게, 장소는 오른쪽. 순서가 곧 그날의 흐름이라 번호를 붙입니다. 화면에 들어오면 줄이 차례로 떠오릅니다. */}
-                      {s.flow && s.flow.length > 0 && (
-                        <div id={`flow-${s.dayOffset}`} className="mt-5 max-w-[42rem] lg:max-w-none">
-                          <p className={`${META} font-bold ${INK}`}>{t(C.dayFlowLabel)}</p>
-                          <RevealList as="ol" className="mt-2 rounded-2xl bg-[#FFFFFF] px-4 ring-1 ring-[#E3E0D8] sm:px-5">
-                            {s.flow.map((r, k) => {
-                              const text = t(C.flow[s.dayOffset]?.[k] ?? r.what);
-                              const cut = text.search(/[.:] /);
-                              const head = cut > 0 ? text.slice(0, cut) : text;
-                              const rest = cut > 0 ? text.slice(cut + 2) : "";
-                              return (
-                                <li key={k} style={revealDelay(k)} className={`grid grid-cols-[1.5rem_minmax(0,1fr)] gap-x-3 py-3.5 sm:grid-cols-[1.5rem_minmax(0,1fr)_minmax(0,11rem)] sm:gap-x-5 ${k > 0 ? `border-t ${RULE}` : ""} ${REVEAL_ITEM}`}>
-                                  <span aria-hidden className="mt-[3px] flex h-6 w-6 items-center justify-center rounded-full bg-[#EEF0F8] text-[0.8125rem] font-bold tabular-nums text-naru-navy">{k + 1}</span>
-                                  <div className="min-w-0">
-                                    <p className={`break-keep ${BODY} font-semibold ${INK}`}>
-                                      {r.time && <span className={`mr-2 tabular-nums ${NAVY}`}>{r.time}</span>}
-                                      {head}
-                                    </p>
-                                    {rest && <p className={`mt-0.5 break-keep ${META} ${SOFT}`}>{rest}</p>}
-                                    {r.speaker && <p className={`mt-1 break-keep ${META} ${INK}`}>{t(r.speaker.name)} <span className="text-caption">{t(r.speaker.role)}</span></p>}
-                                  </div>
-                                  {r.where && (
-                                    <p className={`col-start-2 mt-1 break-keep ${META} text-caption sm:col-start-3 sm:mt-0.5 sm:text-right`}>
-                                      {r.href ? <Link href={r.href} className={`font-semibold ${NAVY} underline decoration-naru-navy/30 underline-offset-[3px] hover:decoration-naru-navy`}>{t(r.where)}</Link> : t(r.where)}
-                                    </p>
-                                  )}
-                                </li>
-                              );
-                            })}
-                          </RevealList>
-                        </div>
-                      )}
-                      {mentorsOn && (
-                        <div id={`mentors-${s.dayOffset}`} className="max-w-[42rem] lg:max-w-none">
-                          <div className="pt-5">
-                            <p className={`${META} font-bold ${INK}`}>{t(d.mentorsListLabel)}</p>
-                            <RevealList as="ul" className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                              {dayMentors.map((m, k) => (
-                                <li key={m.name.ko} style={revealDelay(k)} className={`rounded-xl bg-[#FFFFFF] px-4 py-3 ring-1 ring-[#E3E0D8] ${REVEAL_ITEM}`}>
-                                  <p className={`${META} font-bold ${INK}`}>{t(m.name)}</p>
-                                  {t(m.org) && <p className={`break-keep ${META} ${SOFT}`}>{t(m.org)}</p>}
-                                </li>
-                              ))}
-                            </RevealList>
-                          </div>
-                        </div>
-                      )}
-                      {s.matchCta && (
-                        <div className="mt-3">
-                          <Link href={s.matchCta.href} onClick={() => track("naru_cta", { src: "day1", to: "match" })} className={LINK}>{t(C.matchLabel)}</Link>
+                      {(s.flow?.length || s.matchCta || mentorsOn) && (
+                        <div className="mt-3 flex flex-wrap gap-x-6">
+                          {s.flow && s.flow.length > 0 && (
+                            <button type="button" aria-haspopup="dialog" onClick={() => setFlowDay(i)} className={LINK}>{t(C.dayFlowLabel)}</button>
+                          )}
+                          {mentorsOn && (
+                            <button type="button" aria-haspopup="dialog" onClick={() => setMentorsDay(i)} className={LINK}>{t(d.mentorsCtaLabel)}</button>
+                          )}
+                          {s.matchCta && (
+                            <Link href={s.matchCta.href} onClick={() => track("naru_cta", { src: "day1", to: "match" })} className={LINK}>{t(C.matchLabel)}</Link>
+                          )}
                         </div>
                       )}
                       {s.voteCta && (
@@ -568,8 +508,6 @@ export default function CrossingSeoul() {
                           )}
                         </div>
                       )}
-                      {/* DECIDED 2026-11-15 (사용자: "이런 식으로 있는 내용들은 하루 일정 맨 밑에"): 그날의 설명 문단은 그날 칸의 맨 끝. */}
-                      <p className={`mt-5 max-w-[42rem] break-keep ${BODY} ${SOFT} lg:max-w-none`}><Lines text={t(C.line[s.dayOffset] ?? s.line)} /></p>
                     </div>
                   </li>
                 );
@@ -717,6 +655,73 @@ export default function CrossingSeoul() {
         labels={{ close: t(hero.photoClose), prev: t(hero.photoPrev), next: t(hero.photoNext) }}
       />
 
+      {(() => {
+        const st = flowDay != null ? stages[flowDay] : null;
+        return (
+          <DayFlowModal
+            onClose={() => setFlowDay(null)}
+            heading={t(C.dayFlowLabel)}
+            closeLabel={t(d.dayFlowClose)}
+            day={st && st.flow ? {
+              dayLabel: `${t(d.dayLabel)} ${st.dayOffset}`,
+              date: formatDecemberDayWithWeekday(locale, st.dayOffset),
+              title: t(st.title),
+              lead: t(C.line[st.dayOffset] ?? st.line),
+              venue: st.logo,
+              venueText: st.venueText && t(st.venueText),
+              venueNote: st.venueNote && t(st.venueNote),
+              rows: st.flow.map((r, k) => ({
+                time: r.time, what: t(C.flow[st.dayOffset]?.[k] ?? r.what), where: r.where && t(r.where), href: r.href,
+                speaker: r.speaker && {
+                  photo: r.speaker.photo, name: t(r.speaker.name), role: t(r.speaker.role),
+                  agendaLabel: t(C.speakerLabel[`${st.dayOffset}-${k}`] ?? r.speaker.agendaLabel),
+                  agenda: (C.speakerAgenda[`${st.dayOffset}-${k}`] ?? r.speaker.agenda).map(t),
+                },
+              })),
+            } : null}
+          />
+        );
+      })()}
+
+      {(() => {
+        const st = mentorsDay != null ? stages[mentorsDay] : null;
+        const ms = d.mentors.filter((m) => m.confirmed);
+        return (
+          <DayFlowModal
+            onClose={() => setMentorsDay(null)}
+            heading={t(C.mentorsTalkLabel)}
+            closeLabel={t(d.dayFlowClose)}
+            day={st ? { dayLabel: `${t(d.dayLabel)} ${st.dayOffset}`, date: formatDecemberDayWithWeekday(locale, st.dayOffset), title: t(d.mentorsHeading), lead: t(C.mentorsIntro), rows: [] } : null}
+          >
+            {/* DECIDED 2026-11-09 (사용자, 멘토 브리프 장 스크린숏: "이거대로 update"): 세 묶음, 묶음마다 설명 뒤 따옴표 여럿. 끝에 점수 없는 자리 한 줄. */}
+            <ol className="grid gap-2.5">
+              {d.mentorsTalk.map((x, j) => (
+                <li key={j} className="flex flex-col gap-1.5 rounded-xl card-sunken px-4 py-3.5">
+                  <p className={`text-[0.9375rem] font-bold leading-snug ${INK}`}>{t(C.mentorsTalkTitles[j] ?? x.title)}</p>
+                  <p className={`break-keep ${META} ${SOFT}`}>{t(C.mentorsTalkBody[j])}</p>
+                  <ul className="mt-1.5 flex flex-col gap-1">
+                    {x.quotes.map((q, k) => (
+                      <li key={k} className={`break-keep ${META} font-semibold ${NAVY}`}>{t(q)}</li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ol>
+            <p className={`mt-3 break-keep ${META} font-bold ${INK}`}>{t(C.mentorsTalkNote)}</p>
+            <p className={`mt-7 border-t ${RULE} pt-5 ${META} font-bold ${INK}`}>{t(d.mentorsListLabel)}</p>
+            <p className={`mt-1 break-keep ${META} ${SOFT}`}>{t(C.mentorsListNote)}</p>
+            <ul className="mt-2 flex flex-col">
+              {ms.map((m) => (
+                <li key={m.name.ko} className={`flex flex-col gap-0.5 border-b ${RULE} py-3.5 last:border-b-0`}>
+                  <p className={`text-[0.9375rem] font-bold ${INK}`}>{t(m.name)}</p>
+                  {t(m.org) && <p className={`break-keep ${META} ${SOFT}`}>{t(m.org)} <span className="text-caption">{t(m.role)}</span></p>}
+                  {m.bio && <p className={`break-keep ${META} text-caption`}>{t(m.bio)}</p>}
+                </li>
+              ))}
+            </ul>
+          </DayFlowModal>
+        );
+      })()}
     </>
   );
 }
