@@ -8,6 +8,7 @@
 
 ### 2026-11
 
+- [2026-11-18 새 매니페스토, 메뉴에 미디어](#2026-11-18-manifesto)
 - [2026-11-17 그날 제목 타이핑, 장소를 앞에](#2026-11-17-typewriter)
 - [2026-11-17 배너 설명 키움, 글자 단 통일](#2026-11-17-type)
 - [2026-11-17 마무리 다듬기](#2026-11-17-refine)
@@ -573,6 +574,12 @@
 - [2026-06-15 Design-revamp polish cycle](#changelog-june-15-2026)
 
 ---
+
+<a id="2026-11-18-manifesto"></a>
+## 2026-11-18 새 매니페스토, 메뉴에 미디어
+- 범위: public/naru/manifesto/ko-*.jpg, ko-s-*.jpg, components/naru/ManifestoViewer.tsx(V), data/naru.ts(naruPageNav), components/shared/SiteHeader.tsx
+- 한 것: 사용자 요청. 한국어 매니페스토 여섯 쪽을 사용자가 보낸 메니페스토.pdf(서론부터 마무리하며까지 6쪽)로 교체. PyMuPDF로 2400px, 1000px 폭으로 그리고 A4 비율 칸 가운데에 흰 여백으로 맞춤, 캐시 버전 20261118a. 영문판 일곱 쪽은 그대로. 메뉴: 나루 홈(코어, 일하는 방식, 왜, 미디어, 매니페스토)과 크로싱 서울(함께하는 곳 다음 미디어)에 미디어
+- 검증: tsc 통과, 세 페이지에 #media 메뉴 링크, 첫 쪽 이미지 눈으로 확인
 
 <a id="2026-11-17-typewriter"></a>
 ## 2026-11-17 그날 제목 타이핑, 장소를 앞에
