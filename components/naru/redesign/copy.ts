@@ -74,5 +74,4 @@ export const copy = {
   milestones: ko("세 곳 모두 경쟁이 치열해요. 학점, 인턴, 졸업, 오퍼 같은 눈앞의 칸부터 채우느라\n'나는 어디로 갈 수 있지?'를 물어볼 시간이 없는 거예요.", naru.join.milestones),
   closingStatement: ko("절박하지 않아도\n시작할 수 있도록.", naru.join.closingStatement),
   closingBody: kos(["문 두드리는 법은 보통 절박해진 다음에야 배워요.\n연습도 안 시켜 놓고 왜 못 하냐고 물을 수는 없잖아요. 그래서 그 연습을 미리 열어요."], naru.join.closingBody),
-  manifestoBody: ko("왜 모였는지, 그리고 무엇이 바뀌어도\n그대로 둘 게 뭔지 적어 둔 문서예요.", naru.join.manifesto.body),
 };

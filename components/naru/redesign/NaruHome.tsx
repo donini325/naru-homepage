@@ -235,7 +235,6 @@ export default function NaruHome() {
             <div className="rounded-[22px] px-6 py-10 ring-1 ring-[#E3E0D8] sm:px-10 lg:grid lg:grid-cols-12 lg:gap-12 lg:px-12 lg:py-12">
               <div className="lg:col-span-5">
                 <h2 id="manifesto-title" className={`${TITLE} ${INK}`}>{t(naru.join.manifesto.label)}</h2>
-                <p className={`mt-3 break-keep ${BODY} ${SOFT}`}><Lines text={t(C.manifestoBody)} /></p>
               </div>
               <div className="mt-8 lg:col-span-7 lg:mt-0">
                 <ManifestoViewer locale={locale === "en" ? "en" : "ko"} t={t} />
