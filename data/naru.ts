@@ -386,6 +386,8 @@ export const naruPageNav: { id: string; label: Phrase; railLines?: Phrase; ariaL
   // 제목의 말로 맞춥니다. 끝의 매니페스토 블록(#join-ways)으로 가는 칸을 하나 더했습니다.
   { id: "how", label: { ko: "일하는 방식", en: "How" }, ariaLabel: { ko: "어떻게 일하는가", en: "How we work" } },
   { id: "why", label: { ko: "왜", en: "Why" }, ariaLabel: { ko: "왜 이 자리가 필요한가", en: "Why this place is needed" } },
+  // DECIDED 2026-11-18 (사용자: "메뉴바 각 페이지에 다 미디어 추가"): 화면 순서대로 매니페스토 앞.
+  { id: "media", label: { ko: "미디어", en: "Media" } },
   { id: "join-ways", label: { ko: "매니페스토", en: "Manifesto" } },
 ];
 // 2026-10-13 (등록 브리프 2.1): 여기 있던 naruPageBack("← 크로싱 서울")은 헤더의 페이지 칩 셋이 대신합니다.

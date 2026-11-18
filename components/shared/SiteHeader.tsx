@@ -19,7 +19,10 @@ import { useActiveSection, type NavAnchor } from "@/components/journey/JourneyNa
 // 지금 보고 있는 장은 잉크색 글자와 주황 밑줄로 표시합니다(2026-11-16 사용자: AI 티 나는 점과 알약을 걷음. 그 전에는 주황 점).
 // 순서는 이 페이지의 화면 순서입니다. naruNav의 순서는 옛 홈(함께하는 곳이 맨 위)의 것이라 여기서 다시 늘어놓습니다.
 const ORDER = ["december", "gains", "partners", "register"];
-const CROSSING_ANCHORS: NavAnchor[] = ORDER.map((id) => naruNav.find((a) => a.id === id)).filter((a): a is NavAnchor => !!a);
+// DECIDED 2026-11-18 (사용자: 각 페이지 메뉴에 미디어): 크로싱 서울은 함께하는 곳 다음, 화면 순서대로.
+const MEDIA_ANCHOR: NavAnchor = { id: "media", label: { ko: "미디어", en: "Media" } };
+const CROSSING_ANCHORS: NavAnchor[] = ORDER.map((id) => naruNav.find((a) => a.id === id)).filter((a): a is NavAnchor => !!a)
+  .flatMap((a) => (a.id === "partners" ? [a, MEDIA_ANCHOR] : [a]));
 
 // DECIDED 2026-11-13 (8월 기록 새 화면): 8월 목차는 새 화면(components/archive/redesign/AugustRecord.tsx)의 섹션 순서입니다.
 const AUG_ANCHORS: NavAnchor[] = [
